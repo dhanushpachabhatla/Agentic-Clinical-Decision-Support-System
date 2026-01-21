@@ -1,21 +1,28 @@
 """
-Clinical NLP Agent (Enhanced)
------------------------------
-Responsibilities:
-- Extract clinical entities from text
-- Detect negation (no / denies / without)
-- Extract labs with value + unit
-- Preserve context, date, and source
-- NO diagnosis or reasoning
-
-Designed for downstream:
-- Temporal agent
-- GraphRAG
-- Explainability
+Clinical NLP Agent (Layered)
+----------------------------
+Layer 1: Deterministic heuristic extraction
+Layer 2: Biomedical NER (scispaCy)
+NO diagnosis
+NO reasoning
+NO hallucination
 """
 
 from typing import List, Dict
 import re
+
+# -----------------------------
+# OPTIONAL: Model-based NER
+# -----------------------------
+
+try:
+    import spacy
+    _NLP = spacy.load("en_ner_bc5cdr_md")
+    MODEL_NER_AVAILABLE = True
+except Exception:
+    _NLP = None
+    MODEL_NER_AVAILABLE = False
+
 
 # -----------------------------
 # Public API
@@ -27,6 +34,8 @@ def extract_entities(documents: List[Dict]) -> List[Dict]:
     for doc in documents:
         text = doc["text"]
 
+        # ---- Layer 1: Heuristics ----
+        heuristic_entities = []
         for extractor in [
             _extract_symptoms,
             _extract_conditions,
@@ -34,26 +43,135 @@ def extract_entities(documents: List[Dict]) -> List[Dict]:
             _extract_medications,
             _extract_procedures,
         ]:
-            entities = extractor(text)
+            heuristic_entities.extend(extractor(text))
 
-            for ent in entities:
-                extracted.append({
-                    "entity": ent["entity"],
-                    "type": ent["type"],
-                    "normalized": _normalize(ent["entity"]),
-                    "negated": ent.get("negated", False),
-                    "value": ent.get("value"),
-                    "unit": ent.get("unit"),
-                    "context": ent["context"],
-                    "date": doc.get("date"),
-                    "source": doc.get("source"),
-                })
+        # Normalize heuristic entities
+        seen = set()
+        for ent in heuristic_entities:
+            key = (ent["entity"].lower(), ent["type"])
+            seen.add(key)
+
+            extracted.append(_build_entity(
+                ent=ent,
+                doc=doc,
+                source="heuristic"
+            ))
+
+        # ---- Layer 2: Model-based NER ----
+        if MODEL_NER_AVAILABLE:
+            model_entities = _extract_model_entities(text)
+
+            for ent in model_entities:
+                key = (ent["entity"].lower(), ent["type"])
+                if key in seen:
+                    continue  # already captured by heuristics
+
+                # Do not let model override known symptom/procedure entities
+                if key[0] in [e["entity"].lower() for e in heuristic_entities]:
+                    continue
+
+                extracted.append(_build_entity(
+                    ent=ent,
+                    doc=doc,
+                    source="model"
+                ))
 
     return extracted
 
 
 # -----------------------------
-# Negation detection (simple, reliable)
+# Entity builders
+# -----------------------------
+
+def _build_entity(ent: Dict, doc: Dict, source: str) -> Dict:
+    return {
+        "entity": ent["entity"],
+        "type": ent["type"],
+        "normalized": _normalize(ent["entity"]),
+        "negated": ent.get("negated", False),
+        "value": ent.get("value"),
+        "unit": ent.get("unit"),
+        "context": ent["context"],
+        "section": _infer_section(ent["context"]),
+        "date": doc.get("date"),
+        "source": doc.get("source"),
+        "extraction_source": source,  # heuristic | model
+    }
+
+def _extract_labs(text: str) -> List[Dict]:
+    """
+    Extracts lab name, numeric value, and unit.
+    Example:
+        Hemoglobin: 10.2 g/dL
+        WBC = 12000 /mm3
+    """
+
+    lab_patterns = {
+        "hemoglobin": r"(hemoglobin|hb)\s*[:=]?\s*(\d+\.?\d*)\s*(g/dl|gm/dl)?",
+        "wbc": r"(wbc|white blood cell)\s*[:=]?\s*(\d+)\s*(/mm3|x10\^3)?",
+        "esr": r"(esr)\s*[:=]?\s*(\d+)\s*(mm/hr)?",
+        "platelets": r"(platelet[s]?)\s*[:=]?\s*(\d+)\s*(/mm3|x10\^3)?",
+    }
+
+    results = []
+
+    for lab, pattern in lab_patterns.items():
+        for match in re.finditer(pattern, text, flags=re.IGNORECASE):
+            start = match.start()
+            end = match.end()
+
+            results.append({
+                "entity": lab,
+                "type": "lab",
+                "value": match.group(2),
+                "unit": match.group(3),
+                "negated": _is_negated(text, start),
+                "context": _extract_sentence_context(text, start),
+            })
+
+    return results
+
+# -----------------------------
+# Model-based NER extractor
+# -----------------------------
+
+def _extract_model_entities(text: str) -> List[Dict]:
+    results = []
+    doc = _NLP(text)
+
+    for ent in doc.ents:
+        raw = ent.text.strip()
+
+        # Skip negation-like phrases
+        if raw.lower().startswith(("no ", "denies", "without")):
+            continue
+
+        # Only allow true disease / drug candidates
+        if ent.label_ == "DISEASE":
+            etype = "condition"
+        elif ent.label_ == "CHEMICAL":
+            etype = "medication"
+        else:
+            continue
+
+        # Skip very short / generic phrases
+        if len(raw.split()) < 2:
+            continue
+
+        start = ent.start_char
+        results.append({
+            "entity": raw,
+            "type": etype,
+            "negated": _is_negated(text, start),
+            "context": _extract_sentence_context(text, start),
+        })
+
+    return results
+
+
+
+# -----------------------------
+# Negation detection (sentence-bounded)
 # -----------------------------
 
 NEGATION_CUES = [
@@ -62,16 +180,75 @@ NEGATION_CUES = [
 ]
 
 def _is_negated(text: str, start: int) -> bool:
-    """
-    Checks a small window before entity mention
-    """
-    window = text[max(0, start - 40):start].lower()
-    return any(cue in window for cue in NEGATION_CUES)
+    sentence_start = max(
+        text.rfind(".", 0, start),
+        text.rfind("\n", 0, start)
+    )
+    if sentence_start == -1:
+        sentence_start = 0
+
+    window = text[sentence_start:start].lower()
+    return any(re.search(rf"\b{cue}\b", window) for cue in NEGATION_CUES)
 
 
 # -----------------------------
-# Entity extractors
+# Sentence-bounded context
 # -----------------------------
+
+def _extract_sentence_context(text: str, start: int) -> str:
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    char_count = 0
+
+    for i, sent in enumerate(sentences):
+        sent_len = len(sent)
+        if char_count <= start <= char_count + sent_len:
+            prev_sent = sentences[i - 1] if i > 0 else ""
+            next_sent = sentences[i + 1] if i < len(sentences) - 1 else ""
+            return " ".join(s for s in [prev_sent, sent, next_sent] if s).strip()
+        char_count += sent_len + 1
+
+    return text[max(0, start - 80):start + 80]
+
+
+# -----------------------------
+# Section inference
+# -----------------------------
+
+def _infer_section(context: str) -> str:
+    ctx = context.lower()
+
+    if "denies" in ctx or "no " in ctx:
+        return "review_of_systems"
+    if "history of" in ctx:
+        return "past_medical_history"
+    if "treated with" in ctx or "started on" in ctx:
+        return "treatment"
+    if "scan" in ctx or "performed" in ctx:
+        return "investigation"
+
+    return "unspecified"
+
+
+# -----------------------------
+# Heuristic extractors (unchanged)
+# -----------------------------
+
+def _keyword_entity_extractor(text: str, keywords: List[str], entity_type: str) -> List[Dict]:
+    lowered = text.lower()
+    results = []
+
+    for kw in keywords:
+        for match in re.finditer(rf"\b{re.escape(kw)}\b", lowered):
+            start, end = match.start(), match.end()
+            results.append({
+                "entity": kw,
+                "type": entity_type,
+                "negated": _is_negated(text, start),
+                "context": _extract_sentence_context(text, start),
+            })
+
+    return results
+
 
 def _extract_symptoms(text: str) -> List[Dict]:
     symptoms = [
@@ -107,70 +284,12 @@ def _extract_procedures(text: str) -> List[Dict]:
 
 
 # -----------------------------
-# Improved Lab Extraction
-# -----------------------------
-
-def _extract_labs(text: str) -> List[Dict]:
-    """
-    Extracts lab name, numeric value, and unit.
-    Example:
-        Hemoglobin: 10.2 g/dL
-        WBC = 12000 /mm3
-    """
-
-    lab_patterns = {
-        "hemoglobin": r"(hemoglobin|hb)\s*[:=]?\s*(\d+\.?\d*)\s*(g/dl|gm/dl)?",
-        "wbc": r"(wbc|white blood cell)\s*[:=]?\s*(\d+)\s*(/mm3|x10\^3)?",
-        "esr": r"(esr)\s*[:=]?\s*(\d+)\s*(mm/hr)?",
-        "platelets": r"(platelet[s]?)\s*[:=]?\s*(\d+)\s*(/mm3|x10\^3)?",
-    }
-
-    results = []
-
-    for lab, pattern in lab_patterns.items():
-        for match in re.finditer(pattern, text, flags=re.IGNORECASE):
-            start = match.start()
-            end = match.end()
-
-            results.append({
-                "entity": lab,
-                "type": "lab",
-                "value": match.group(2),
-                "unit": match.group(3),
-                "negated": _is_negated(text, start),
-                "context": text[max(0, start - 40):min(len(text), end + 40)],
-            })
-
-    return results
-
-
-# -----------------------------
-# Shared keyword extractor
-# -----------------------------
-
-def _keyword_entity_extractor(text: str, keywords: List[str], entity_type: str) -> List[Dict]:
-    lowered = text.lower()
-    results = []
-
-    for kw in keywords:
-        for match in re.finditer(rf"\b{re.escape(kw)}\b", lowered):
-            start, end = match.start(), match.end()
-            results.append({
-                "entity": kw,
-                "type": entity_type,
-                "negated": _is_negated(text, start),
-                "context": text[max(0, start - 40):min(len(text), end + 40)],
-            })
-
-    return results
-
-
-# -----------------------------
-# Normalization (placeholder)
+# Normalization
 # -----------------------------
 
 def _normalize(entity: str) -> str:
     return entity.upper().replace(" ", "_")
+
 
 
 # -----------------------------

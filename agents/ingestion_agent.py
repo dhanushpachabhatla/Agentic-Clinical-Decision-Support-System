@@ -19,7 +19,8 @@ Guarantees:
 
 This module is the ONLY entry point for raw data.
 """
-
+import cv2
+import numpy as np
 from typing import List, Dict, Optional
 from pathlib import Path
 import re
@@ -27,6 +28,10 @@ import pdfplumber
 import pytesseract
 from PIL import Image
 from datetime import datetime
+
+import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 
 SUPPORTED_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".tiff"}
@@ -75,6 +80,7 @@ def ingest_files(file_paths: List[str]) -> List[Dict]:
 
             elif ext in SUPPORTED_IMAGE_EXTENSIONS:
                 raw_text = _extract_image_text(file_path)
+                print(f"[DEBUG] OCR text length for {file_path.name}: {len(raw_text)}")
 
             elif ext in SUPPORTED_TEXT_EXTENSIONS:
                 raw_text = file_path.read_text(encoding="utf-8", errors="ignore")
@@ -82,11 +88,11 @@ def ingest_files(file_paths: List[str]) -> List[Dict]:
             else:
                 continue
 
-            if not raw_text or len(raw_text.strip()) < 20:
+            if not raw_text:
                 continue
 
             cleaned_text = _clean_text(raw_text)
-
+            print(f"[DEBUG] Adding document: {file_path.name}")
             documents.append({
                 "text": cleaned_text,
                 "doc_type": _infer_doc_type(cleaned_text),
@@ -143,11 +149,29 @@ def _ocr_pdf(path: Path) -> str:
 
 
 def _extract_image_text(path: Path) -> str:
-    """
-    OCR for images (scanned notes, reports).
-    """
-    image = Image.open(path)
-    return pytesseract.image_to_string(image)
+    import cv2
+    import numpy as np
+
+    print(f"[DEBUG] OCR called for image: {path.name}")
+
+    img = cv2.imread(str(path))
+    if img is None:
+        print("[DEBUG] cv2 failed to load image")
+        return ""
+
+    print("[DEBUG] Image shape:", img.shape)
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # VERY IMPORTANT: skip fancy preprocessing for now
+    # Just test raw OCR
+    text = pytesseract.image_to_string(gray)
+
+    print("[DEBUG] OCR raw output length:", len(text))
+    print("[DEBUG] OCR raw preview:", repr(text[:200]))
+
+    return text
+
 
 
 # -----------------------------
@@ -155,25 +179,37 @@ def _extract_image_text(path: Path) -> str:
 # -----------------------------
 
 def _clean_text(text: str) -> str:
-    """
-    Cleans OCR noise and normalizes formatting
-    while preserving clinical meaning.
-    """
-
     # Normalize line breaks
     text = text.replace("\r", "\n")
 
-    # Remove page numbers / headers / footers (heuristic)
+    # Fix hyphenated line breaks across lines
+    text = re.sub(r"(\w)-\n(\w)", r"\1\2", text)
+
+    # Remove page markers
     text = re.sub(r"\n\s*Page\s+\d+\s*\n", "\n", text, flags=re.IGNORECASE)
 
-    # Remove excessive whitespace
+    # Collapse whitespace
     text = re.sub(r"[ \t]+", " ", text)
     text = re.sub(r"\n{3,}", "\n\n", text)
 
-    # Fix broken OCR words (simple heuristic)
-    text = re.sub(r"(\w)-\n(\w)", r"\1\2", text)
+    # SAFE spacing fixes ONLY
+    # lower → Upper (very reliable)
+    text = re.sub(r"([a-z])([A-Z])", r"\1 \2", text)
+
+    # letter ↔ number (very reliable)
+    text = re.sub(r"([A-Za-z])(\d)", r"\1 \2", text)
+    text = re.sub(r"(\d)([A-Za-z])", r"\1 \2", text)
 
     return text.strip()
+
+
+def _looks_like_text_image(img: np.ndarray) -> bool:
+    # If very few edges → likely medical image, not text
+    edges = cv2.Canny(img, 100, 200)
+    edge_density = edges.mean()
+    return edge_density > 5
+
+
 
 
 # -----------------------------
@@ -231,18 +267,31 @@ def _extract_date(text: str) -> Optional[str]:
 def main():
     """
     Manual test entry point for ingestion agent.
-    Usage:
-        python ingestion_agent.py /path/to/file1 /path/to/file2
+    File paths are defined inside the code (project-relative).
     """
 
-    import sys
-    from pprint import pprint
+    from pathlib import Path
+    print("[DEBUG] Tesseract version:", pytesseract.get_tesseract_version())
 
-    if len(sys.argv) < 2:
-        print("Usage: python ingestion_agent.py <file1> <file2> ...")
+    # ingestion_agent.py → agents/ → project_root
+    PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+    # Define sample files here
+    file_paths = [
+        PROJECT_ROOT / "samples" / "report_2_medic.png",
+        # PROJECT_ROOT / "samples" / "Chest_Pain.pdf",
+        # PROJECT_ROOT / "samples" / "image.png",
+        PROJECT_ROOT / "samples" / "report_1_medic.png",
+        # PROJECT_ROOT / "samples" / "essay.png",
+        # PROJECT_ROOT / "samples" / "lab_report.txt",
+    ]
+
+    # Convert Path objects to strings and validate
+    file_paths = [str(p) for p in file_paths if p.exists()]
+
+    if not file_paths:
+        print("[ERROR] No valid sample files found.")
         return
-
-    file_paths = sys.argv[1:]
 
     print("\n[INFO] Starting ingestion...\n")
     documents = ingest_files(file_paths)
@@ -256,7 +305,7 @@ def main():
         print(f"Type     : {doc['doc_type']}")
         print(f"Date     : {doc['date']}")
         print("-" * 60)
-        print(doc["text"][:1000])  # preview first 1000 chars
+        print(doc["text"][:4000])  # preview first 1000 chars
         print("\n")
 
 

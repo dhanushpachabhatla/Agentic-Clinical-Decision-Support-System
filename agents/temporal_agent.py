@@ -180,65 +180,12 @@ def _detect_conflicts(entity_history: Dict[str, List[Dict]]) -> List[Dict]:
 # -----------------------------
 
 def main():
-    sample_entities = [
-        {
-            "entity": "chest pain",
-            "normalized": "CHEST_PAIN",
-            "type": "symptom",
-            "negated": False,
-            "date": "2024-06-01",
-            "context": "Patient presents with chest pain",
-            "source": "visit1.txt",
-        },
-        {
-            "entity": "chest pain",
-            "normalized": "CHEST_PAIN",
-            "type": "symptom",
-            "negated": False,
-            "date": "2024-07-10",
-            "context": "Chest pain persists",
-            "source": "visit2.txt",
-        },
-        {
-            "entity": "fever",
-            "normalized": "FEVER",
-            "type": "symptom",
-            "negated": True,
-            "date": "2024-07-10",
-            "context": "Denies fever",
-            "source": "visit2.txt",
-        },
-        {
-            "entity": "fever",
-            "normalized": "FEVER",
-            "type": "symptom",
-            "negated": False,
-            "date": "2024-08-01",
-            "context": "Patient has fever",
-            "source": "visit3.txt",
-        },
-        {
-            "entity": "hemoglobin",
-            "normalized": "HEMOGLOBIN",
-            "type": "lab",
-            "value": "12.0",
-            "unit": "g/dL",
-            "negated": False,
-            "date": "2024-06-01",
-            "context": "Hemoglobin 12.0 g/dL",
-            "source": "lab1.txt",
-        },
-        {
-            "entity": "hemoglobin",
-            "normalized": "HEMOGLOBIN",
-            "type": "lab",
-            "value": "10.2",
-            "unit": "g/dL",
-            "negated": False,
-            "date": "2024-08-01",
-            "context": "Hemoglobin 10.2 g/dL",
-            "source": "lab2.txt",
-        },
+    sample_entities = [{'entity': 'hemoglobin', 'type': 'lab', 'normalized': 'HEMOGLOBIN', 'negated': False, 'value': '10.2', 'unit': 'g/dL', 'context': ' diabetes and hypertension.\n            Hemoglobin: 10.2 g/dL\n            WBC = 12000 /mm3\n          ', 'section': 'unspecified', 'date': '2024-08-14', 'source': 'sample_note.txt'},
+{'entity': 'wbc', 'type': 'lab', 'normalized': 'WBC', 'negated': False, 'value': '12000', 'unit': '/mm3', 'context': '      Hemoglobin: 10.2 g/dL\n            WBC = 12000 /mm3\n            ESR: 45 mm/hr\n            C', 'section': 'unspecified', 'date': '2024-08-14', 'source': 'sample_note.txt'},
+{'entity': 'esr', 'type': 'lab', 'normalized': 'ESR', 'negated': False, 'value': '45', 'unit': 'mm/hr', 'context': '           WBC = 12000 /mm3\n            ESR: 45 mm/hr\n            CT scan of chest performed.', 'section': 'investigation', 'date': '2024-08-14', 'source': 'sample_note.txt'},
+{'entity': 'aspirin', 'type': 'medication', 'normalized': 'ASPIRIN', 'negated': False, 'value': None, 'unit': None, 'context': 'est performed.\n            Treated with aspirin and metformin.\n            ', 'section': 'treatment', 'date': '2024-08-14', 'source': 'sample_note.txt'},
+{'entity': 'metformin', 'type': 'medication', 'normalized': 'METFORMIN', 'negated': False, 'value': None, 'unit': None, 'context': 'd.\n            Treated with aspirin and metformin.\n            ', 'section': 'treatment', 'date': '2024-08-14', 'source': 'sample_note.txt'},
+{'entity': 'ct scan', 'type': 'procedure', 'normalized': 'CT_SCAN', 'negated': False, 'value': None, 'unit': None, 'context': '3\n            ESR: 45 mm/hr\n            CT scan of chest performed.\n            Treated', 'section': 'investigation', 'date': '2024-08-14', 'source': 'sample_note.txt'},
     ]
 
     timeline = build_timeline(sample_entities)

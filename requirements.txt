@@ -36,5 +36,12 @@ qdrant-client
 python-dotenv
 pydantic
 requests
+
+opencv-python<4.9
+numpy<2
+
+opencv-python
+scispacy
+https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.4/en_ner_bc5cdr_md-0.5.4.tar.gz
 pdfplumber
 pytesseract
