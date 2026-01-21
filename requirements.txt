@@ -36,3 +36,5 @@ qdrant-client
 python-dotenv
 pydantic
 requests
+pdfplumber
+pytesseract
