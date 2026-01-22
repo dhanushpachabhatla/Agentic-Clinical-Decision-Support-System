@@ -286,6 +286,7 @@ def main():
         # PROJECT_ROOT / "samples" / "lab_report.txt",
     ]
 
+
     # Convert Path objects to strings and validate
     file_paths = [str(p) for p in file_paths if p.exists()]
 
