@@ -10,6 +10,7 @@ def main():
     PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
     file_paths = [
+        # PROJECT_ROOT / "samples" / "image.png",
         PROJECT_ROOT / "samples" / "report_1_medic.png",
         # PROJECT_ROOT / "samples" / "report_2_medic.png",
         # PROJECT_ROOT / "samples" / "Chest_Pain.pdf",

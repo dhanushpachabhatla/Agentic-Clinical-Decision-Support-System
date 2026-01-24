@@ -278,10 +278,10 @@ def main():
 
     # Define sample files here
     file_paths = [
-        PROJECT_ROOT / "samples" / "report_2_medic.png",
+        # PROJECT_ROOT / "samples" / "report_2_medic.png",
         # PROJECT_ROOT / "samples" / "Chest_Pain.pdf",
-        # PROJECT_ROOT / "samples" / "image.png",
-        PROJECT_ROOT / "samples" / "report_1_medic.png",
+        PROJECT_ROOT / "samples" / "image.png",
+        # PROJECT_ROOT / "samples" / "report_1_medic.png",
         # PROJECT_ROOT / "samples" / "essay.png",
         # PROJECT_ROOT / "samples" / "lab_report.txt",
     ]
