@@ -13,7 +13,7 @@ Designed for:
 
 from typing import List, Dict, Optional
 import asyncio
-from agents.embedding_agent import embed_chunks
+from services.embedding import embed_chunks
 import uuid
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import (

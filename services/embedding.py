@@ -208,6 +208,29 @@ async def main():
         print("-" * 60)
 
     
+# -----------------------------
+# Query Embedding (for retrieval)
+# -----------------------------
+
+async def embed_query(query: str) -> List[float]:
+    """
+    Embeds a single query string for retrieval.
+
+    Input:
+        "Is elevated troponin indicative of myocardial infarction?"
+
+    Output:
+        [float, float, ...]
+    """
+
+    if not query or not query.strip():
+        return []
+
+    cleaned = _clean_text(query)
+
+    embeddings = await _embed_texts([cleaned])
+
+    return embeddings[0]
 
 
 if __name__ == "__main__":

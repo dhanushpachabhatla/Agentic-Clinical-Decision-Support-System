@@ -1,26 +1,26 @@
 """
-Web Search Agent (LangGraph Node)
----------------------------------
+Web Search Agent
+----------------
 Role:
 - Retrieve non-indexed medical information
 - Rare disease mentions
-- Newly released clinical guidelines
-- Uses Tavily Search via LangChain
+- Newly released guidelines not yet in PubMed
 
-Rules:
+Rules (ENFORCED):
 - No reasoning
 - No hallucination
 - No LLM usage
-- Returns raw evidence snippets only
+- Evidence-only output
+- Short snippets only
 
-Can run standalone OR as LangGraph node
+Backend:
+- Tavily Search API
 """
 
-from typing import Dict, Any, List
+from typing import List, Dict, Optional
 import os
 from dotenv import load_dotenv
-
-from langchain_community.tools.tavily_search import TavilySearchResults
+from tavily import TavilyClient
 
 
 # ======================================================
@@ -31,80 +31,105 @@ load_dotenv()
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 if not TAVILY_API_KEY:
-    raise EnvironmentError("TAVILY_API_KEY not set in environment")
+    raise EnvironmentError("TAVILY_API_KEY not set")
 
+_client = TavilyClient(api_key=TAVILY_API_KEY)
 
-# Initialize Tavily tool
-tavily_tool = TavilySearchResults(
-    max_results=5,
-    api_key=TAVILY_API_KEY
-)
+# Trusted medical / scientific domains
+TRUSTED_DOMAINS = [
+    "who.int",
+    "cdc.gov",
+    "nih.gov",
+    "ncbi.nlm.nih.gov",
+    "nejm.org",
+    "thelancet.com",
+    "nature.com",
+    "science.org",
+    "ema.europa.eu",
+    "fda.gov"
+]
 
-
-# ======================================================
-# LangGraph Node Function
-# ======================================================
-
-def web_search_node(state: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    LangGraph-compatible node.
-
-    Expects:
-        state["query"] -> clinician question
-
-    Produces:
-        state["web_search_results"] -> list of search snippets
-    """
-
-    query = state.get("query", "").strip()
-
-    if not query:
-        state["web_search_results"] = []
-        return state
-
-    print("[WebSearchAgent] Calling Tavily search...")
-
-    results = tavily_tool.invoke({"query": query})
-
-    formatted: List[Dict] = []
-
-    for r in results:
-        formatted.append({
-            "title": r.get("title"),
-            "url": r.get("url"),
-            "snippet": r.get("content")
-        })
-
-    state["web_search_results"] = formatted
-    return state
+MAX_SNIPPET_LENGTH = 400
 
 
 # ======================================================
-# Standalone Function (optional simple call)
+# Internal Helpers
+# ======================================================
+
+def _is_trusted_source(url: Optional[str]) -> bool:
+    if not url:
+        return False
+    return any(domain in url for domain in TRUSTED_DOMAINS)
+
+
+def _normalize_snippet(text: Optional[str]) -> str:
+    if not text:
+        return ""
+    return text.strip().replace("\n", " ")[:MAX_SNIPPET_LENGTH]
+
+
+# ======================================================
+# Public API
 # ======================================================
 
 def web_search(query: str, max_results: int = 5) -> List[Dict]:
     """
-    Direct function call without LangGraph.
-    Useful for quick testing.
+    Performs controlled medical web search.
+
+    Input:
+        query: medical query string
+
+    Output:
+        [
+          {
+            "title": str,
+            "url": str,
+            "snippet": str,
+            "source_type": "web",
+            "trusted": bool
+          }
+        ]
     """
 
-    tool = TavilySearchResults(
-        max_results=max_results,
-        api_key=TAVILY_API_KEY
-    )
+    if not query or not query.strip():
+        return []
 
-    results = tool.invoke({"query": query})
+    try:
+        response = _client.search(
+            query=query,
+            search_depth="advanced",
+            max_results=max_results
+        )
+    except Exception as e:
+        # Fail safely — orchestrator can retry or skip
+        return [{
+            "title": "Web search failed",
+            "url": None,
+            "snippet": str(e),
+            "source_type": "web",
+            "trusted": False
+        }]
 
-    formatted = []
-    for r in results:
-        formatted.append({
+    results: List[Dict] = []
+    seen_urls = set()
+
+    for r in response.get("results", []):
+        url = r.get("url")
+
+        if not url or url in seen_urls:
+            continue
+
+        seen_urls.add(url)
+
+        results.append({
             "title": r.get("title"),
-            "url": r.get("url"),
-            "snippet": r.get("content")
+            "url": url,
+            "snippet": _normalize_snippet(r.get("content")),
+            "source_type": "web",
+            "trusted": _is_trusted_source(url)
         })
 
-    return formatted
+    return results
 
 
 # ======================================================
@@ -113,34 +138,15 @@ def web_search(query: str, max_results: int = 5) -> List[Dict]:
 
 if __name__ == "__main__":
 
-    # -------------------------------
-    # Test 1: Standalone Function
-    # -------------------------------
-    print("\n===== Standalone Web Search Test =====\n")
+    test_query = "new WHO guideline on dengue fever 2024"
 
-    test_query = "2025 clinical guideline myocarditis management"
+    print("\n[INFO] Running Web Search Agent...\n")
 
-    results = web_search(test_query, max_results=3)
+    results = web_search(test_query, max_results=5)
 
     for r in results:
-        print("=" * 60)
-        print("Title:", r["title"])
-        print("URL:", r["url"])
-        print("Snippet:", (r["snippet"] or "")[:300])
-
-    # -------------------------------
-    # Test 2: LangGraph Node Simulation
-    # -------------------------------
-    print("\n===== LangGraph Node Test =====\n")
-
-    test_state = {
-        "query": "new rare disease treatment guidelines 2025"
-    }
-
-    updated_state = web_search_node(test_state)
-
-    for r in updated_state["web_search_results"]:
-        print("=" * 60)
-        print("Title:", r["title"])
-        print("URL:", r["url"])
-        print("Snippet:", (r["snippet"] or "")[:300])
+        print("=" * 70)
+        print("Title   :", r["title"])
+        print("URL     :", r["url"])
+        print("Trusted :", r["trusted"])
+        print("Snippet :", r["snippet"])
