@@ -19,9 +19,19 @@ class ClinicalState:
     raw_documents: List[Dict] = field(default_factory=list)
 
     # -------------------------------------------------
-    # NLP output
+    # NLP output (raw)
     # -------------------------------------------------
     nlp_results: List[Dict] = field(default_factory=list)
+
+    # -------------------------------------------------
+    # NLP output (date-normalized)  👈 NEW
+    # -------------------------------------------------
+    normalized_nlp_results: List[Dict] = field(default_factory=list)
+
+    # -------------------------------------------------
+    # Canonical normalized date (optional but useful)
+    # -------------------------------------------------
+    normalized_date: Optional[str] = None
 
     # -------------------------------------------------
     # Embedding output
@@ -29,7 +39,7 @@ class ClinicalState:
     embedding_results: List[Dict] = field(default_factory=list)
 
     # -------------------------------------------------
-    # Vector store output (Pinecone)
+    # Vector store output
     # -------------------------------------------------
     vector_store_results: List[Dict] = field(default_factory=list)
 

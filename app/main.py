@@ -1,8 +1,7 @@
 from dotenv import load_dotenv
-load_dotenv()  #  MUST be first – loads .env for entire pipeline
+load_dotenv()  # MUST be first – loads .env for entire pipeline
 
 from pathlib import Path
-import json
 
 from app.state import ClinicalState
 from app.orchestrator import ClinicalOrchestrator
@@ -50,17 +49,22 @@ def main():
         return
 
     # -------------------------------------------------
-    # STEP 2: CLINICAL NLP
+    # STEP 2: CLINICAL NLP + DATE NORMALIZATION
     # -------------------------------------------------
     state = orchestrator.run_clinical_nlp(state)
     print(f"[INFO] NLP processed {len(state.nlp_results)} document(s)")
+    print(f"[INFO] Normalized NLP results: {len(state.normalized_nlp_results)}")
 
-    if not state.nlp_results:
-        print("[ERROR] No NLP results produced. Exiting.")
+    if not state.normalized_nlp_results:
+        print("[ERROR] No normalized NLP results produced. Exiting.")
         return
 
+    # Show canonical normalized date (if available)
+    if state.normalized_date:
+        print(f"[INFO] Canonical document date: {state.normalized_date}")
+
     # -------------------------------------------------
-    # STEP 3: EMBEDDING
+    # STEP 3: EMBEDDING (USES NORMALIZED DATA)
     # -------------------------------------------------
     state = orchestrator.run_embedding(state)
     print(f"[INFO] Generated embeddings for {len(state.embedding_results)} document(s)")
