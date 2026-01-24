@@ -20,6 +20,8 @@ import re
 import json
 from datetime import datetime
 from typing import List, Dict, Tuple
+from dotenv import load_dotenv
+load_dotenv()  # Load .env for API keys, etc.
 
 # =====================================================
 # OPTIONAL: scispaCy (ONLY for clinical notes)
@@ -39,7 +41,7 @@ except Exception:
 # =====================================================
 
 from groq import Groq
-groq_client = Groq(api_key="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")
+groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 
 
