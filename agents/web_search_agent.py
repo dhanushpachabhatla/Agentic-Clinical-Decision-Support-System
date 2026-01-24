@@ -1,26 +1,26 @@
 """
-Web Search Agent
-----------------
+Web Search Agent (LangGraph Node)
+---------------------------------
 Role:
 - Retrieve non-indexed medical information
 - Rare disease mentions
-- Newly released guidelines not yet in PubMed
+- Newly released clinical guidelines
+- Uses Tavily Search via LangChain
 
 Rules:
-- Must be used sparingly
 - No reasoning
 - No hallucination
 - No LLM usage
 - Returns raw evidence snippets only
 
-Backend:
-- Tavily Search API
+Can run standalone OR as LangGraph node
 """
 
-from typing import List, Dict
+from typing import Dict, Any, List
 import os
 from dotenv import load_dotenv
-from tavily import TavilyClient
+
+from langchain_community.tools.tavily_search import TavilySearchResults
 
 
 # ======================================================
@@ -31,51 +31,80 @@ load_dotenv()
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 if not TAVILY_API_KEY:
-    raise EnvironmentError("TAVILY_API_KEY not set")
+    raise EnvironmentError("TAVILY_API_KEY not set in environment")
 
-_client = TavilyClient(api_key=TAVILY_API_KEY)
+
+# Initialize Tavily tool
+tavily_tool = TavilySearchResults(
+    max_results=5,
+    api_key=TAVILY_API_KEY
+)
 
 
 # ======================================================
-# Public API
+# LangGraph Node Function
 # ======================================================
 
-def web_search(query: str, max_results: int = 5) -> List[Dict]:
+def web_search_node(state: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Performs controlled web search.
+    LangGraph-compatible node.
 
-    Input:
-        query: medical query string
+    Expects:
+        state["query"] -> clinician question
 
-    Output:
-        [
-          {
-            "title": "...",
-            "url": "...",
-            "snippet": "..."
-          }
-        ]
+    Produces:
+        state["web_search_results"] -> list of search snippets
     """
 
-    if not query.strip():
-        return []
+    query = state.get("query", "").strip()
 
-    response = _client.search(
-        query=query,
-        search_depth="advanced",
-        max_results=max_results
-    )
+    if not query:
+        state["web_search_results"] = []
+        return state
 
-    results: List[Dict] = []
+    print("[WebSearchAgent] Calling Tavily search...")
 
-    for r in response.get("results", []):
-        results.append({
+    results = tavily_tool.invoke({"query": query})
+
+    formatted: List[Dict] = []
+
+    for r in results:
+        formatted.append({
             "title": r.get("title"),
             "url": r.get("url"),
             "snippet": r.get("content")
         })
 
-    return results
+    state["web_search_results"] = formatted
+    return state
+
+
+# ======================================================
+# Standalone Function (optional simple call)
+# ======================================================
+
+def web_search(query: str, max_results: int = 5) -> List[Dict]:
+    """
+    Direct function call without LangGraph.
+    Useful for quick testing.
+    """
+
+    tool = TavilySearchResults(
+        max_results=max_results,
+        api_key=TAVILY_API_KEY
+    )
+
+    results = tool.invoke({"query": query})
+
+    formatted = []
+    for r in results:
+        formatted.append({
+            "title": r.get("title"),
+            "url": r.get("url"),
+            "snippet": r.get("content")
+        })
+
+    return formatted
 
 
 # ======================================================
@@ -84,13 +113,33 @@ def web_search(query: str, max_results: int = 5) -> List[Dict]:
 
 if __name__ == "__main__":
 
-    test_query = "new 2025 guideline management myocarditis"
+    # -------------------------------
+    # Test 1: Standalone Function
+    # -------------------------------
+    print("\n===== Standalone Web Search Test =====\n")
 
-    print("\n[INFO] Running Web Search Agent...\n")
+    test_query = "2025 clinical guideline myocarditis management"
 
     results = web_search(test_query, max_results=3)
 
     for r in results:
+        print("=" * 60)
+        print("Title:", r["title"])
+        print("URL:", r["url"])
+        print("Snippet:", (r["snippet"] or "")[:300])
+
+    # -------------------------------
+    # Test 2: LangGraph Node Simulation
+    # -------------------------------
+    print("\n===== LangGraph Node Test =====\n")
+
+    test_state = {
+        "query": "new rare disease treatment guidelines 2025"
+    }
+
+    updated_state = web_search_node(test_state)
+
+    for r in updated_state["web_search_results"]:
         print("=" * 60)
         print("Title:", r["title"])
         print("URL:", r["url"])
