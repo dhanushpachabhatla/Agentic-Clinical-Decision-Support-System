@@ -1,205 +1,201 @@
 """
-Retriever Agent
-----------------
+Retriever Agent (Entity-centric, Pinecone)
+------------------------------------------
 Responsibility:
-- Retrieve relevant RAG chunks from vector store
-- Support TWO retrieval modes:
+- Retrieve relevant clinical ENTITIES from Pinecone
+- Support:
     1. Summary retrieval (dashboard)
     2. Q/A retrieval (chat)
 
 Rules:
-- NO embeddings generation (delegated)
-- NO reasoning
 - NO LLM usage
-- NO tool calling
+- NO reasoning
+- NO interpretation
 - Deterministic retrieval only
 
-Uses:
-- vector_store.query_similar
-- embedding_agent.embed_query
+Works with:
+- services.embedding (Gemini)
+- services.upsert (Pinecone schema)
 """
 
 from typing import List, Dict, Optional
-from services.embedding import embed_query
-from services.vector_store import query_similar
+from pinecone import Pinecone
+import os
+
+# Gemini embedding
+from services.embedding import _embed_text  # internal but deterministic
 
 
-# ======================================================
-# Configuration
-# ======================================================
+# =====================================================
+# PINECONE CONFIG
+# =====================================================
 
-SUMMARY_TOP_K = 20
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+PINECONE_INDEX_URL = os.getenv("PINECONE_INDEX_URL")
+
+if not PINECONE_API_KEY or not PINECONE_INDEX_URL:
+    raise RuntimeError("Pinecone environment variables missing")
+
+pc = Pinecone(api_key=PINECONE_API_KEY)
+index = pc.Index(host=PINECONE_INDEX_URL)
+
+
+# =====================================================
+# RETRIEVAL CONFIG
+# =====================================================
+
 QA_TOP_K = 5
-
-SUMMARY_SECTION_PRIORITY = [
-    "diagnosis",
-    "history",
-    "investigation",
-    "assessment",
-    "treatment",
-    "plan"
-]
+SUMMARY_TOP_K = 20
 
 
-# ======================================================
-# Public API
-# ======================================================
+# =====================================================
+# RETRIEVER AGENT
+# =====================================================
 
 class RetrieverAgent:
     """
-    Central retrieval capability.
+    Entity-centric retriever.
     Orchestrator decides WHICH method to call.
     """
 
-    # --------------------------------------------------
-    # Mode 1: Dashboard / Summary Retrieval
-    # --------------------------------------------------
+    # -------------------------------------------------
+    # Mode 1: Q/A Retrieval (High Precision)
+    # -------------------------------------------------
 
-    async def retrieve_for_summary(
-        self,
-        patient_id: Optional[str] = None,
-        sections: Optional[List[str]] = None,
-        date: Optional[str] = None,
-    ) -> List[Dict]:
-        """
-        Retrieves a broad, stable set of chunks for dashboard summary.
-
-        Characteristics:
-        - High recall
-        - Section-aware
-        - Time-aware
-        - Deterministic
-        """
-
-        # Use a generic summary anchor query
-        query_text = "patient clinical summary medical history findings"
-
-        query_vector = await embed_query(query_text)
-
-        filters = {}
-
-        if sections:
-            # NOTE: Qdrant filter supports single values.
-            # Multiple sections handled via multiple calls.
-            results = []
-            for section in sections:
-                section_results = query_similar(
-                    query_vector=query_vector,
-                    top_k=SUMMARY_TOP_K // len(sections),
-                    filters={"section": section}
-                )
-                results.extend(section_results)
-
-            return self._postprocess_results(results)
-
-        if date:
-            filters["date"] = date
-
-        results = query_similar(
-            query_vector=query_vector,
-            top_k=SUMMARY_TOP_K,
-            filters=filters if filters else None
-        )
-
-        return self._postprocess_results(results)
-
-
-    # --------------------------------------------------
-    # Mode 2: Q/A Retrieval
-    # --------------------------------------------------
-
-    async def retrieve_for_qa(
+    def retrieve_for_qa(
         self,
         query: str,
         filters: Optional[Dict] = None,
-        top_k: int = QA_TOP_K,
+        top_k: int = QA_TOP_K
     ) -> List[Dict]:
         """
-        Retrieves precise chunks for question answering.
-
-        Characteristics:
-        - High precision
-        - Query-driven
-        - Token-budget aware
+        Retrieve entities most relevant to a user question.
         """
 
-        query_vector = await embed_query(query)
+        if not query or not query.strip():
+            return []
 
-        results = query_similar(
-            query_vector=query_vector,
+        query_vector = _embed_text(query)
+
+        pinecone_filter = self._build_filter(filters)
+
+        response = index.query(
+            vector=query_vector,
             top_k=top_k,
-            filters=filters
+            include_metadata=True,
+            filter=pinecone_filter
         )
 
-        return self._postprocess_results(results)
+        return self._postprocess(response.matches)
 
 
-# ======================================================
-# Internal Helpers
-# ======================================================
+    # -------------------------------------------------
+    # Mode 2: Summary Retrieval (High Recall)
+    # -------------------------------------------------
 
-    def _postprocess_results(self, results: List[Dict]) -> List[Dict]:
+    def retrieve_for_summary(
+        self,
+        filters: Optional[Dict] = None,
+        top_k: int = SUMMARY_TOP_K
+    ) -> List[Dict]:
         """
-        Normalizes and sorts retrieval output.
+        Retrieve broad entity coverage for dashboard summary.
         """
 
-        cleaned = []
+        anchor_query = (
+            "clinical summary diagnosis labs medications findings history"
+        )
 
-        for r in results:
-            payload = r.get("payload", {})
+        query_vector = _embed_text(anchor_query)
 
-            cleaned.append({
-                "chunk_id": r.get("id"),
-                "score": r.get("score"),
-                "section": payload.get("section"),
-                "date": payload.get("date"),
-                "source": payload.get("source"),
-                "doc_type": payload.get("doc_type"),
-                "negated_entities": payload.get("negated_entities", []),
-                "labs": payload.get("labs", []),
+        pinecone_filter = self._build_filter(filters)
+
+        response = index.query(
+            vector=query_vector,
+            top_k=top_k,
+            include_metadata=True,
+            filter=pinecone_filter
+        )
+
+        return self._postprocess(response.matches)
+
+
+# =====================================================
+# INTERNAL HELPERS
+# =====================================================
+
+    def _build_filter(self, filters: Optional[Dict]) -> Optional[Dict]:
+        """
+        Convert simple filters into Pinecone filter.
+        """
+        if not filters:
+            return None
+
+        return {
+            k: {"$eq": v}
+            for k, v in filters.items()
+            if v is not None
+        }
+
+
+    def _postprocess(self, matches) -> List[Dict]:
+        """
+        Normalize Pinecone matches.
+        """
+
+        results = []
+
+        for m in matches:
+            meta = m.metadata or {}
+
+            results.append({
+                "id": m.id,
+                "score": m.score,
+                "entity": meta.get("entity"),
+                "normalized": meta.get("normalized"),
+                "type": meta.get("type"),
+                "source": meta.get("source"),
+                "date": meta.get("date"),
+                "doc_type": meta.get("doc_type"),
             })
 
-        # Sort by score (descending)
-        cleaned.sort(key=lambda x: x["score"], reverse=True)
+        # Sort explicitly (Pinecone already does, but be safe)
+        results.sort(key=lambda x: x["score"], reverse=True)
 
-        return cleaned
+        return results
 
 
-# ======================================================
-# Manual Test
-# ======================================================
+# =====================================================
+# MANUAL TEST
+# =====================================================
 
 if __name__ == "__main__":
-    import asyncio
 
     retriever = RetrieverAgent()
 
-    async def test():
+    print("\n[TEST] Q/A Retrieval\n")
 
-        print("\n[TEST] Q/A Retrieval\n")
+    qa_results = retriever.retrieve_for_qa(
+        query="Is elevated SGOT indicative of liver injury?",
+        filters={"doc_type": "lab_report"}
+    )
 
-        qa_results = await retriever.retrieve_for_qa(
-            query="Is elevated troponin indicative of myocardial infarction?",
-            filters={"section": "investigation"}
-        )
+    for r in qa_results:
+        print("=" * 70)
+        print("Entity :", r["entity"])
+        print("Type   :", r["type"])
+        print("Score  :", r["score"])
+        print("Source :", r["source"])
+        print("Date   :", r["date"])
 
-        for r in qa_results:
-            print("=" * 70)
-            print("Chunk ID:", r["chunk_id"])
-            print("Score:", r["score"])
-            print("Section:", r["section"])
-            print("Date:", r["date"])
+    print("\n[TEST] Summary Retrieval\n")
 
-        print("\n[TEST] Summary Retrieval\n")
+    summary_results = retriever.retrieve_for_summary(
+        filters={"doc_type": "lab_report"}
+    )
 
-        summary_results = await retriever.retrieve_for_summary(
-            sections=["diagnosis", "investigation"]
-        )
-
-        for r in summary_results:
-            print("=" * 70)
-            print("Chunk ID:", r["chunk_id"])
-            print("Score:", r["score"])
-            print("Section:", r["section"])
-
-    asyncio.run(test())
+    for r in summary_results:
+        print("=" * 70)
+        print("Entity :", r["entity"])
+        print("Type   :", r["type"])
+        print("Score  :", r["score"])

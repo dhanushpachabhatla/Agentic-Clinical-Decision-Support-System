@@ -74,7 +74,7 @@ def upsert_embeddings(embedding_output: Dict) -> Dict:
             "doc_type": metadata.get("doc_type"),
         }
 
-        # 🔥 CRITICAL FIX: remove None values
+        #  CRITICAL FIX: remove None values
         meta = {k: v for k, v in meta.items() if v is not None}
 
         vectors.append({
