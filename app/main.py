@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-load_dotenv()  # 🔥 MUST be first – loads .env for entire pipeline
+load_dotenv()  #  MUST be first – loads .env for entire pipeline
 
 from pathlib import Path
 import json
