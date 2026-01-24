@@ -1,0 +1,100 @@
+{
+  "doc_metadata": {
+    "source": "report_1_medic.png",
+    "date": null,
+    "doc_type": "lab_report"
+  },
+  "entities": [
+    {
+      "entity": "CONJUGATED D. BILIRUBIN",
+      "type": "lab",
+      "normalized": "CONJUGATED_D._BILIRUBIN",
+      "value": "7.79",
+      "unit": "mg/dL",
+      "negated": false,
+      "context": "CONJUGATED (D. BILIRUBIN) 7.79 H mg/dl 0.00 - 0.30",
+      "section": "laboratory_results",
+      "date": null,
+      "source": "report_1_medic.png",
+      "extraction_source": "lab_parser"
+    },
+    {
+      "entity": "UNCONJUGATED",
+      "type": "lab",
+      "normalized": "UNCONJUGATED",
+      "value": "1.0",
+      "unit": "mg/dL",
+      "negated": false,
+      "context": "UNCONJUGATED (1.0.BILIRUBIN) 1.63 H mg/dl 0.00 - 0.70",
+      "section": "laboratory_results",
+      "date": null,
+      "source": "report_1_medic.png",
+      "extraction_source": "lab_parser"
+    },
+    {
+      "entity": "ALKALINE PHOSPHATASE",
+      "type": "lab",
+      "normalized": "ALKALINE_PHOSPHATASE",
+      "value": "396",
+      "unit": "U/L",
+      "negated": false,
+      "context": "ALKALINE PHOSPHATASE 396 H U/L 42.00 - 128.00",
+      "section": "laboratory_results",
+      "date": null,
+      "source": "report_1_medic.png",
+      "extraction_source": "lab_parser"
+    },
+    {
+      "entity": "ALBUMIN",
+      "type": "lab",
+      "normalized": "ALBUMIN",
+      "value": "3.7",
+      "unit": "g/dL",
+      "negated": false,
+      "context": "ALBUMIN 3.7 L omdt 3.80 - 5.40",
+      "section": "unspecified",
+      "date": null,
+      "source": "report_1_medic.png",
+      "extraction_source": "lab_parser"
+    },
+    {
+      "entity": "GLOBULIN",
+      "type": "lab",
+      "normalized": "GLOBULIN",
+      "value": "2.5",
+      "unit": "g/dL",
+      "negated": false,
+      "context": "GLOBULIN 2.5 giivdl 1,50 - 3.60",
+      "section": "unspecified",
+      "date": null,
+      "source": "report_1_medic.png",
+      "extraction_source": "lab_parser"
+    },
+    {
+      "entity": "AWG RATIO",
+      "type": "lab",
+      "normalized": "AWG_RATIO",
+      "value": "1.48",
+      "unit": null,
+      "negated": false,
+      "context": "AWG RATIO — 1.48 1.0-2.0",
+      "section": "unspecified",
+      "date": null,
+      "source": "report_1_medic.png",
+      "extraction_source": "lab_parser"
+    },
+    {
+      "entity": "GAMMAT-GT",
+      "type": "lab",
+      "normalized": "GAMMAT-GT",
+      "value": "263",
+      "unit": "IU/L",
+      "negated": false,
+      "context": "GAMMAT-GT 263 H IU/L 11,00 - 50.00",
+      "section": "unspecified",
+      "date": null,
+      "source": "report_1_medic.png",
+      "extraction_source": "lab_parser"
+    }
+  ]
+}
