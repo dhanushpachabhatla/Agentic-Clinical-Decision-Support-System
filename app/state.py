@@ -30,6 +30,12 @@ class ClinicalState:
     nlp_results: List[Dict] = field(default_factory=list)
 
     # -------------------------------------------------
+    # Embedding output (embedding.py)
+    # One entry per NLP result
+    # -------------------------------------------------
+    embedding_results: List[Dict] = field(default_factory=list)
+
+    # -------------------------------------------------
     # Pipeline bookkeeping
     # -------------------------------------------------
     errors: List[str] = field(default_factory=list)

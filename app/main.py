@@ -11,12 +11,6 @@ def main():
     """
     Entry point for the Clinical Decision Support pipeline.
 
-    Responsibilities:
-    - Define input files
-    - Initialize pipeline state
-    - Run orchestrator steps
-    - Display results and errors
-
     STRICT:
     - No medical reasoning
     - No data mutation
@@ -25,16 +19,12 @@ def main():
     PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
     # -------------------------------------------------
-    # INPUT FILES (add/remove as needed)
+    # INPUT FILES
     # -------------------------------------------------
     file_paths = [
-        # PROJECT_ROOT / "samples" / "image.png",
         PROJECT_ROOT / "samples" / "report_1_medic.png",
-        # PROJECT_ROOT / "samples" / "report_2_medic.png",
-        # PROJECT_ROOT / "samples" / "Chest_Pain.pdf",
     ]
 
-    # Convert to strings + validate existence
     file_paths = [str(p) for p in file_paths if p.exists()]
 
     if not file_paths:
@@ -51,7 +41,6 @@ def main():
     # STEP 1: INGESTION
     # -------------------------------------------------
     state = orchestrator.run_ingestion(state)
-
     print(f"\n[INFO] Ingested {len(state.raw_documents)} document(s)\n")
 
     if not state.raw_documents:
@@ -62,21 +51,32 @@ def main():
     # STEP 2: CLINICAL NLP
     # -------------------------------------------------
     state = orchestrator.run_clinical_nlp(state)
+    print(f"[INFO] NLP processed {len(state.nlp_results)} document(s)\n")
+
+    # -------------------------------------------------
+    # STEP 3: EMBEDDING
+    # -------------------------------------------------
+    state = orchestrator.run_embedding(state)
+    print(f"[INFO] Generated embeddings for {len(state.embedding_results)} document(s)\n")
 
     # -------------------------------------------------
     # OUTPUT
     # -------------------------------------------------
-    print(f"\n[INFO] NLP processed {len(state.nlp_results)} document(s)\n")
-
-    for idx, item in enumerate(state.nlp_results, start=1):
+    for idx, item in enumerate(state.embedding_results, start=1):
         print("=" * 80)
-        print(f"Processed Document {idx}")
-        print(f"Source      : {item.get('source')}")
-        print(f"Saved JSON  : {item.get('output_path')}")
+        print(f"Embedded Document {idx}")
+        print(f"Source           : {item.get('source')}")
+        print(f"Embedding Model  : {item.get('embedding_model')}")
+        print(f"Num Vectors      : {item.get('num_embeddings')}")
         print("-" * 80)
 
-        # Pretty print NLP result
-        print(json.dumps(item.get("result", {}), indent=2))
+        # Preview first embedding only (safe)
+        if item.get("embeddings"):
+            preview = item["embeddings"][0]
+            print("First Entity     :", preview.get("entity"))
+            print("Vector Dim       :", len(preview.get("embedding", [])))
+            print("Vector Preview   :", preview.get("embedding", [])[:10])
+
         print()
 
     # -------------------------------------------------

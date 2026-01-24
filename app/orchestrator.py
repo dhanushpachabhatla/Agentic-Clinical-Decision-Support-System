@@ -3,6 +3,7 @@
 from app.state import ClinicalState
 from services.ingestion import ingest_files
 from services.clinical_nlp import extract_and_process, save_result_json
+from services.embedding import embed_clinical_json
 
 
 class ClinicalOrchestrator:
@@ -54,10 +55,9 @@ class ClinicalOrchestrator:
                 # Run NLP on ONE document at a time
                 result = extract_and_process([doc])
 
-                # Persist result immediately (fail-safe)
+                # Persist NLP output
                 output_path = save_result_json(result)
 
-                # Store both result + path for traceability
                 state.nlp_results.append({
                     "source": doc.get("source"),
                     "output_path": output_path,
@@ -67,6 +67,35 @@ class ClinicalOrchestrator:
             except Exception as e:
                 state.add_error(
                     f"NLP failed for document {doc.get('source', idx)}: {str(e)}"
+                )
+
+        return state
+
+    # -------------------------------------------------
+    # STEP 3: EMBEDDING
+    # -------------------------------------------------
+    def run_embedding(self, state: ClinicalState) -> ClinicalState:
+        state.current_step = "embedding"
+
+        if not state.nlp_results:
+            state.add_error("No NLP results available for embedding")
+            return state
+
+        for idx, item in enumerate(state.nlp_results):
+            try:
+                # Use NLP JSON result directly
+                embedding_output = embed_clinical_json(item["result"])
+
+                state.embedding_results.append({
+                    "source": item.get("source"),
+                    "embedding_model": embedding_output.get("embedding_model"),
+                    "num_embeddings": len(embedding_output.get("embeddings", [])),
+                    "embeddings": embedding_output.get("embeddings")
+                })
+
+            except Exception as e:
+                state.add_error(
+                    f"Embedding failed for document {item.get('source', idx)}: {str(e)}"
                 )
 
         return state

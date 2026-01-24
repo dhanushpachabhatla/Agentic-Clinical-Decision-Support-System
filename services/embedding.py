@@ -1,237 +1,187 @@
 """
-Embedding Agent (Gemini - google.genai)
---------------------------------------
+Embedding Agent
+----------------
 Responsibility:
-- Convert RAG chunks into dense embeddings
-- Use Gemini embedding models via google.genai
-- Produce vector records for Hybrid RAG
+- Convert structured Clinical NLP JSON output into embeddings
+- NO reasoning
+- NO interpretation
+- Deterministic transformation only
 
-Guarantees:
-- No chunk modification
-- No retrieval logic
-- No reasoning
+Embedding Model:
+- Google Gemini: text-embedding-004
 """
 
-from typing import List, Dict
 import os
-import asyncio
-import time
-from dotenv import load_dotenv
-from google import genai
-from google.genai.types import EmbedContentConfig
+import json
+from typing import Dict, List, Union
 
-# -----------------------------
-# Configuration
-# -----------------------------
-load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY1")
+# =====================================================
+# DEPENDENCY CHECK
+# =====================================================
+
+try:
+    from google import genai
+except ImportError as e:
+    raise RuntimeError(
+        "Missing dependency: google-genai\n"
+        "Install with: pip install google-genai"
+    ) from e
+
+
+# =====================================================
+# CONFIG
+# =====================================================
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
 if not GEMINI_API_KEY:
-    raise EnvironmentError("GEMINI_API_KEY1 not set")
+    raise RuntimeError(
+        "GEMINI_API_KEY not found.\n"
+        "Set it using:\n"
+        "  $env:GEMINI_API_KEY='your_key_here'  (PowerShell)"
+    )
+
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 EMBEDDING_MODEL = "text-embedding-004"
-OUTPUT_DIM = 3072
-TASK_TYPE = "RETRIEVAL_DOCUMENT"
-
-# Rate safety
-MAX_RETRIES = 3
-RETRY_DELAY = 10  # seconds
 
 
-# -----------------------------
-# Client
-# -----------------------------
+# =====================================================
+# PUBLIC API
+# =====================================================
 
-_client = genai.Client(api_key=GEMINI_API_KEY)
-
-
-# -----------------------------
-# Public API
-# -----------------------------
-
-async def embed_chunks(chunks: List[Dict]) -> List[Dict]:
+def embed_clinical_json(
+    clinical_output: Union[Dict, str]
+) -> Dict:
     """
-    Converts RAG chunks into embedding records.
-
-    Input:
-        [
-          {
-            "chunk_id": "...",
-            "text": "...",
-            "metadata": {...}
-          }
-        ]
-
-    Output:
-        [
-          {
-            "id": "chunk_id",
-            "vector": [...],
-            "metadata": {...}
-          }
-        ]
+    Generate embeddings for Clinical NLP output.
     """
 
-    if not chunks:
-        return []
+    data = _load_json(clinical_output)
 
-    texts: List[str] = []
-    index_map: List[int] = []
+    entities = data.get("entities", [])
+    metadata = data.get("doc_metadata", {})
 
-    for idx, chunk in enumerate(chunks):
-        text = _clean_text(chunk.get("text", ""))
-        if text:
-            texts.append(text)
-            index_map.append(idx)
+    records = []
 
-    if not texts:
-        return []
+    for ent in entities:
+        text = _entity_to_text(ent)
+        if not text.strip():
+            continue
 
-    embeddings = await _embed_texts(texts)
-    print(f"[INFO] Gemini embedding dimension: {len(embeddings[0])}")
-
-
-    records: List[Dict] = []
-    for emb, chunk_idx in zip(embeddings, index_map):
-        chunk = chunks[chunk_idx]
+        vector = _embed_text(text)
 
         records.append({
-            "id": chunk["chunk_id"],
-            "vector": emb,
-            "metadata": _build_metadata(chunk),
+            "entity": ent.get("entity"),
+            "type": ent.get("type"),
+            "normalized": ent.get("normalized"),
+            "embedding": vector
         })
 
-    return records
-
-
-# -----------------------------
-# Embedding helpers
-# -----------------------------
-
-async def _embed_texts(texts: List[str]) -> List[List[float]]:
-    """
-    Batched embedding call with retries.
-    """
-
-    for attempt in range(MAX_RETRIES):
-        try:
-            result = _client.models.embed_content(
-                model=EMBEDDING_MODEL,
-                contents=texts,
-                config=EmbedContentConfig(
-                    task_type=TASK_TYPE,
-                    output_dimensionality=OUTPUT_DIM
-                )
-            )
-
-            return [e.values for e in result.embeddings]
-
-        except Exception as e:
-            msg = str(e)
-            if "RESOURCE_EXHAUSTED" in msg and attempt < MAX_RETRIES - 1:
-                print(
-                    f"[WARN] Gemini rate-limited. "
-                    f"Retrying in {RETRY_DELAY}s (attempt {attempt + 1})..."
-                )
-                await asyncio.sleep(RETRY_DELAY)
-                continue
-
-            raise RuntimeError(f"[ERROR] Gemini embedding failed: {e}")
-
-    return []
-
-
-def _clean_text(text: str) -> str:
-    """
-    Lightweight normalization before embedding.
-    """
-    return " ".join(text.split()).strip()
-
-
-def _build_metadata(chunk: Dict) -> Dict:
-    """
-    Builds retrieval-friendly metadata.
-    """
-
-    meta = chunk.get("metadata", {})
-
     return {
-        "source": chunk.get("source"),
-        "date": chunk.get("date"),
-        "section": chunk.get("section"),
-        "doc_type": meta.get("doc_type"),
-        "entities": chunk.get("entities", []),
-        "entity_types": chunk.get("entity_types", []),
-        "negated_entities": meta.get("negated_entities", []),
-        "labs": meta.get("labs", []),
+        "doc_metadata": metadata,
+        "embedding_model": EMBEDDING_MODEL,
+        "embeddings": records
     }
 
 
-# -----------------------------
-# MAIN (Manual Test)
-# -----------------------------
+# =====================================================
+# INTERNAL HELPERS
+# =====================================================
 
-async def main():
-    sample_chunks = [
-        {
-            "chunk_id": "test_chunk_1",
-            "text": (
-                "Patient presents with acute chest pain radiating to the left arm. "
-                "Cardiac troponin is elevated, raising concern for myocardial injury."
-            ),
-            "entities": ["CHEST_PAIN", "TROPONIN"],
-            "entity_types": ["symptom", "lab"],
-            "section": "investigation",
-            "date": "2024-08-14",
-            "source": "er_note_1.txt",
-            "metadata": {
-                "doc_type": "clinical_note",
-                "negated_entities": [],
-                "labs": [
-                    {
-                        "lab": "TROPONIN",
-                        "value": "1.2",
-                        "unit": "ng/mL",
-                        "context": "Cardiac troponin is elevated at 1.2 ng/mL"
-                    }
-                ]
-            }
-        }
+def _load_json(inp: Union[Dict, str]) -> Dict:
+    if isinstance(inp, dict):
+        return inp
+
+    if isinstance(inp, str):
+        with open(inp, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    raise TypeError("Input must be dict or JSON file path")
+
+
+def _entity_to_text(ent: Dict) -> str:
+    """
+    Deterministic textual representation of an entity.
+    """
+
+    parts = [
+        f"Entity: {ent.get('entity')}",
+        f"Type: {ent.get('type')}"
     ]
 
-    records = await embed_chunks(sample_chunks)
+    if ent.get("value") is not None:
+        parts.append(f"Value: {ent.get('value')}")
 
-    print("\nEmbedded Records:\n")
-    for r in records:
-        print(f"ID: {r['id']}")
-        print(f"Vector length: {len(r['vector'])}")
-        print(f"Metadata keys: {list(r['metadata'].keys())}")
-        print("-" * 60)
+    if ent.get("unit"):
+        parts.append(f"Unit: {ent.get('unit')}")
 
-    
-# -----------------------------
-# Query Embedding (for retrieval)
-# -----------------------------
+    if ent.get("section"):
+        parts.append(f"Section: {ent.get('section')}")
 
-async def embed_query(query: str) -> List[float]:
+    return " | ".join(parts)
+
+
+def _embed_text(text: str) -> List[float]:
     """
-    Embeds a single query string for retrieval.
-
-    Input:
-        "Is elevated troponin indicative of myocardial infarction?"
-
-    Output:
-        [float, float, ...]
+    Correct Gemini embedding call (google-genai).
     """
 
-    if not query or not query.strip():
-        return []
+    response = client.models.embed_content(
+        model=EMBEDDING_MODEL,
+        contents=text
+    )
 
-    cleaned = _clean_text(query)
+    return response.embeddings[0].values
 
-    embeddings = await _embed_texts([cleaned])
 
-    return embeddings[0]
+# =====================================================
+# STANDALONE TEST (WITH EMBEDDING DISPLAY)
+# =====================================================
+
+def _standalone_test():
+    sample_clinical_output = {
+        "doc_metadata": {
+            "source": "sample_note.txt",
+            "date": "2024-08-14",
+            "doc_type": "lab_report"
+        },
+        "entities": [
+            {
+                "entity": "SGOT",
+                "type": "lab",
+                "normalized": "SGOT",
+                "value": "162",
+                "unit": "U/L",
+                "section": "laboratory_results"
+            },
+            {
+                "entity": "ALBUMIN",
+                "type": "lab",
+                "normalized": "ALBUMIN",
+                "value": "3.7",
+                "unit": "g/dL",
+                "section": "laboratory_results"
+            }
+        ]
+    }
+
+    output = embed_clinical_json(sample_clinical_output)
+
+    print("\n[INFO] Embedding test successful\n")
+
+    for idx, emb in enumerate(output["embeddings"], start=1):
+        vector = emb["embedding"]
+
+        print("=" * 70)
+        print(f"Entity {idx}: {emb['entity']}")
+        print(f"Type    : {emb['type']}")
+        print(f"Dim     : {len(vector)}")
+        print(f"Preview : {vector[:10]}")  # first 10 values only
+        print("=" * 70)
+
+    print("\n[INFO] Total embeddings:", len(output["embeddings"]))
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    _standalone_test()
