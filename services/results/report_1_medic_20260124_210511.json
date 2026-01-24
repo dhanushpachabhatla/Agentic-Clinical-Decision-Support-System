@@ -1,7 +1,7 @@
 {
   "doc_metadata": {
     "source": "report_1_medic.png",
-    "date": null,
+    "date": "2025-01-09",
     "doc_type": "lab_report"
   },
   "entities": [
@@ -14,7 +14,7 @@
       "negated": false,
       "context": "CONJUGATED (D. BILIRUBIN) 7.79 H mg/dl 0.00 - 0.30",
       "section": "laboratory_results",
-      "date": null,
+      "date": "2025-01-09",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser",
       "span": [
@@ -31,7 +31,7 @@
       "negated": false,
       "context": "ALKALINE PHOSPHATASE 396 H U/L 42.00 - 128.00",
       "section": "laboratory_results",
-      "date": null,
+      "date": "2025-01-09",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser",
       "span": [
@@ -48,7 +48,7 @@
       "negated": false,
       "context": "TOTAL PROTEIN 6.2 gnvdl 6.20 - 3.00",
       "section": "laboratory_results",
-      "date": null,
+      "date": "2025-01-09",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser",
       "span": [
@@ -65,7 +65,7 @@
       "negated": false,
       "context": "ALBUMIN 3.7 L omdt 3.80 - 5.40",
       "section": "laboratory_results",
-      "date": null,
+      "date": "2025-01-09",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser",
       "span": [
@@ -82,7 +82,7 @@
       "negated": false,
       "context": "GLOBULIN 2.5 giivdl 1,50 - 3.60",
       "section": "laboratory_results",
-      "date": null,
+      "date": "2025-01-09",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser",
       "span": [
@@ -97,9 +97,9 @@
       "value": "1.48",
       "unit": null,
       "negated": false,
-      "context": "AWG RATIO — 1.48 1.0-2.0",
+      "context": "AWG RATIO \u00e2\u20ac\u201d 1.48 1.0-2.0",
       "section": "laboratory_results",
-      "date": null,
+      "date": "2025-01-09",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser",
       "span": [
@@ -116,7 +116,7 @@
       "negated": false,
       "context": "GAMMAT-GT 263 H IU/L 11,00 - 50.00",
       "section": "laboratory_results",
-      "date": null,
+      "date": "2025-01-09",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser",
       "span": [
@@ -125,6 +125,6 @@
       ]
     }
   ],
-  "residual_text": "i SO : 9001-2008\n\nSARVODAYA HOSPITAL Dr. (Capt) Atul per (Rott) MB Path\nKJ-7, Kavi Nagar, Ghaziabad (U-P.) Regn No. MCI 3426\n\nmi\n\n[10 Investigation Observed Value Unit Biological Ref interval\nIOCHEMISTRY\n\n- VER FUNCTION TEST (LFT)\n\nBILIRUBIN TOTAL es mg/dl 0,30- 1,20\nUNCONJUGATED (1.0.BILIRUBIN) 1.63 H mg/dl 0.00 - 0.70\nSGOT 162 H WAL 0.00 - 46.00\nSGPT 86 H WWAL 0.00 - 49.00\nwo,\n\nSpecimen : SERUM\n™ END OF REPORT **\n\nFACILITIES : FOR HORMONES ASSAYS, FNAC, HISTOPATHOLOGY, BONE MARROW ASPIRATION & BIOPSY WITH MICRO PHOTOGRAPHS.\nNOTE : ABOVE MENTIONED FINDINGS ARE A PROFESSIONAL J AD NOT A FINAL DIAGNGSIS, ALL LABORATORY TESTS & OTHER\nINVESTIGATION RESULTS ARE TO BE CORELATED CLINIC-PATHOLOGICALLY, DISCREPANCIES, IF ANY, NECESSITATE REVIEW/REPEAT OF THE TESTS.\n\nCLINICAL CORELATION IS MANDATORY",
-  "conclusion_text": "Laboratory findings:\n\n- Total bilirubin: 0.30–1.20 mg/dl (reference interval 0.30–1.20 mg/dl)\n- Unconjugated bilirubin: 1.63 mg/dl (reference interval 0.00–0.70 mg/dl)\n- SG"
+  "residual_text": "i SO : 9001-2008\n\nSARVODAYA HOSPITAL Dr. (Capt) Atul per (Rott) MB Path\nKJ-7, Kavi Nagar, Ghaziabad (U-P.) Regn No. MCI 3426\n\nmi\n\n[10 Investigation Observed Value Unit Biological Ref interval\nIOCHEMISTRY\n\n- VER FUNCTION TEST (LFT)\n\nBILIRUBIN TOTAL es mg/dl 0,30- 1,20\nUNCONJUGATED (1.0.BILIRUBIN) 1.63 H mg/dl 0.00 - 0.70\nSGOT 162 H WAL 0.00 - 46.00\nSGPT 86 H WWAL 0.00 - 49.00\nwo,\n\nSpecimen : SERUM\n\u00e2\u201e\u00a2 END OF REPORT **\n\nFACILITIES : FOR HORMONES ASSAYS, FNAC, HISTOPATHOLOGY, BONE MARROW ASPIRATION & BIOPSY WITH MICRO PHOTOGRAPHS.\nNOTE : ABOVE MENTIONED FINDINGS ARE A PROFESSIONAL J AD NOT A FINAL DIAGNGSIS, ALL LABORATORY TESTS & OTHER\nINVESTIGATION RESULTS ARE TO BE CORELATED CLINIC-PATHOLOGICALLY, DISCREPANCIES, IF ANY, NECESSITATE REVIEW/REPEAT OF THE TESTS.\n\nCLINICAL CORELATION IS MANDATORY",
+  "conclusion_text": "The laboratory report shows the following results:\n\n- Total bilirubin: 0.30\u00e2\u20ac\u201c1.20\u00e2\u20ac\u00afmg/dl (within the reference interval)\n- Unconjugated bilirubin: 1.63\u00e2\u20ac\u00afmg/dl (above the reference interval of 0.00\u00e2\u20ac\u201c0.70\u00e2\u20ac\u00afmg/dl)\n- SGOT (AST): 162\u00e2\u20ac\u00afU/L (above the reference interval of 0.00\u00e2\u20ac\u201c46.00\u00e2\u20ac\u00afU/L)\n- SGPT (ALT): 86\u00e2\u20ac\u00afU/L (above the reference interval of 0.00\u00e2\u20ac\u201c49.00\u00e2\u20ac\u00afU/L)\n\nSpecimen type: serum.\n\nThe report is a professional judgement and is not a final diagnosis. Clinical correlation and further evaluation are recommended."
 }
