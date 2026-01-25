@@ -13,7 +13,7 @@ async def start_chat_mode(orchestrator: ClinicalOrchestrator):
     Runs the interactive chat loop using the Orchestrator.
     """
     print("\n" + "="*50)
-    print(" 🤖 CLINICAL AI READY - Ask me anything!")
+    print(" CLINICAL AI READY - Ask me anything!")
     print("    (Type 'quit' to exit)")
     print("="*50 + "\n")
 

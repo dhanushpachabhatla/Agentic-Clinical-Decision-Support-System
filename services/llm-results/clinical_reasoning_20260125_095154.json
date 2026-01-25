@@ -1,0 +1,21 @@
+{
+  "clinical_summary": "Serial laboratory evaluations from 2025-01-11 and 2025-08-31 show a normal peripheral smear and overall normal complete blood count with WBC 7500‑8200 cells/µL, neutrophils 58‑60%, lymphocytes 30%, and platelet count ~340,000/µL; hemoglobin 135 g/dL and RBC 5.05 million/µL are within reference ranges. Liver enzymes (ALT 10 U/L, AST 12 U/L) are normal. The January report reveals a mildly elevated C‑reactive protein (1.8 mg/dL) and modestly increased total (1.4 mg/dL) and direct (0.6 mg/dL) bilirubin, while procalcitonin is low (0.13 ng/mL). The August report shows borderline low mean corpuscular volume (81.8 fL) and mean corpuscular hemoglobin (26.7 pg) with otherwise normal red cell indices.",
+  "differential_diagnoses": [
+    {
+      "name": "Mild inflammatory or infectious process",
+      "justification": "Elevated CRP (1.8 mg/dL) on 2025-01-11 suggests acute phase response despite low procalcitonin"
+    },
+    {
+      "name": "Benign unconjugated hyperbilirubinemia (e.g., Gilbert syndrome)",
+      "justification": "Slightly elevated total and direct bilirubin (1.4/0.6 mg/dL) with normal liver enzymes"
+    },
+    {
+      "name": "Iron deficiency or early thalassemia trait",
+      "justification": "Borderline low MCV (81.8 fL) and MCH (26.7 pg) on 2025-08-31 with normal hemoglobin"
+    },
+    {
+      "name": "Early hepatic dysfunction",
+      "justification": "Isolated direct bilirubin elevation without transaminase rise may indicate mild hepatocellular impairment"
+    }
+  ]
+}

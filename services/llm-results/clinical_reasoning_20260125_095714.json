@@ -1,0 +1,21 @@
+{
+  "clinical_summary": "Across three laboratory reports from May, September, and October 2025, the patient’s complete blood count remained within normal limits with WBC 7500‑8200 cells/µL and neutrophils 58‑60 %; inflammatory markers were low‑normal (CRP 1.8 mg/dL in May, 4.2 mg/dL in September; procalcitonin 0.13‑0.10 ng/mL). Liver enzymes (ALT 10 U/L, AST 12 U/L) and alkaline phosphatase (70 U/L) were normal throughout. Total bilirubin was mildly elevated on May (1.4 mg/dL) and markedly increased on September (4.1 mg/dL) with direct fraction 0.6 mg/dL; renal function (creatinine 0.4 mg/dL, BUN 24 mg/dL) was normal. Peripheral smear was reported normal, and a risk‑for‑sepsis assessment was noted on May (value 6.5) despite low inflammatory markers.",
+  "differential_diagnoses": [
+    {
+      "name": "Obstructive biliary disease",
+      "justification": "Marked elevation of total bilirubin (4.1 mg/dL) with relatively normal ALT, AST, and alkaline phosphatase suggests cholestasis possibly due to biliary obstruction."
+    },
+    {
+      "name": "Intrahepatic cholestasis (drug‑induced or sepsis‑associated)",
+      "justification": "Elevated bilirubin in the setting of normal transaminases and low inflammatory markers raises consideration of non‑obstructive cholestasis, which can be drug‑related or secondary to early sepsis."
+    },
+    {
+      "name": "Gilbert syndrome",
+      "justification": "Mildly elevated bilirubin on May (1.4 mg/dL) could reflect a benign unconjugated hyperbilirubinemia, though the September level is higher than typical for Gilbert."
+    },
+    {
+      "name": "Hemolysis",
+      "justification": "Elevated total bilirubin could arise from increased red cell breakdown, but indirect bilirubin remained within normal limits, making this less likely."
+    }
+  ]
+}
