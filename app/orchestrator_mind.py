@@ -1,33 +1,18 @@
 """
-Clinical Orchestrator (LangGraph)
---------------------------------
+Clinical Orchestrator (LangGraph) - REASONING ENGINE
+----------------------------------------------------
 Responsibility:
-- Interpret user intent
-- Route to correct agents
-- Control retrieval mode (summary vs Q/A)
-- Call tools when required
-- Compress context safely
-- Call LLM for final answer
-- Maintain conversational memory
+- Handle USER QUERIES (Online)
+- Intent detection -> Retrieval -> Answer
+- Wraps the LangGraph logic in a callable API
 """
 
-# =====================================================
-# 1. SETUP & IMPORTS (Fixed Order)
-# =====================================================
 import os
+import json
 from dotenv import load_dotenv
-
-# Load env vars BEFORE importing agents
-load_dotenv()
-GEMINI_API_KEY2 = os.getenv("GEMINI_API_KEY2")
-
-if not GEMINI_API_KEY2:
-    raise ValueError("GEMINI_API_KEY2 not found in .env")
-
-os.environ["GEMINI_API_KEY"] = GEMINI_API_KEY2
-os.environ["GOOGLE_API_KEY"] = GEMINI_API_KEY2
-
 from typing import TypedDict, List, Dict, Optional, Annotated
+
+# LangGraph & LangChain
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
 from langchain_core.messages import BaseMessage, HumanMessage
@@ -35,53 +20,68 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 # Agent Imports
 from agents.retrieval_agent import RetrieverAgent
-from agents.drug_intelligence_agent import extract_drug_names, fetch_drug_intelligence
+from agents.drug_intelligence_agent import fetch_drug_intelligence
 from agents.literature_search_agent import literature_search
 from agents.web_search_agent import web_search
 
 # =====================================================
-# 2. CONFIGURATION
+# 1. SETUP
 # =====================================================
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash", # Updated to stable version
-    temperature=0.3,
-    max_tokens=None,
-    max_retries=2,
-)
+def _init_llm():
+    load_dotenv()
+    GEMINI_API_KEY3 = os.getenv("GEMINI_API_KEY4")
+    if not GEMINI_API_KEY3:
+        GEMINI_API_KEY3 = os.getenv("GEMINI_API_KEY1") # Fallback
+        if not GEMINI_API_KEY3:
+            raise ValueError("GEMINI_API_KEY not found in .env")
+    
+    os.environ["GEMINI_API_KEY"] = GEMINI_API_KEY3
+    os.environ["GOOGLE_API_KEY"] = GEMINI_API_KEY3
+
+    return ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
+        temperature=0.0, # Lower temperature for better JSON
+        max_tokens=None,
+        max_retries=2,
+    )
+
+try:
+    llm = _init_llm()
+except Exception:
+    llm = None 
 
 # =====================================================
-# 3. STATE DEFINITION
+# 2. STATE DEFINITION
 # =====================================================
 
 class OrchestratorState(TypedDict):
     user_query: str
     intent: Optional[str]
+    # NEW: Generic slot to hold the specific thing we are searching for 
+    # (e.g., drug name, search keywords, or specific question)
+    tool_query: Optional[str] 
+    
     entities: Optional[List[Dict]]
     retrieved_context: List[Dict]
     tool_outputs: List[Dict]
     compressed_context: str
     final_answer: str
-    
-    # NEW: Structured list to hold source metadata for the frontend
-    # Example: [{"type": "web", "title": "CDC Guide", "url": "..."}]
     sources: List[Dict] 
-    
     messages: Annotated[List[BaseMessage], add_messages]
 
-
 # =====================================================
-# NODE 1: Intent Detection
+# 3. NODES
 # =====================================================
 
 def detect_intent(state: OrchestratorState) -> OrchestratorState:
+    # We update the prompt to ask for JSON output
     prompt = f"""
-You are a clinical AI ORCHESTRATOR.
-Your job is ONLY to route the user query to the correct internal agent.
+    You are a clinical AI ORCHESTRATOR.
+    Analyze the query and extract the INTENT and the specific PARAMETER (tool_query).
 
-You have the following agents available:
-
-1. dashboard_summary
+    AGENTS:
+    1. dashboard_summary
    - Use when the user wants an OVERVIEW or SUMMARY
    - Examples:
      • "Give me a summary of this patient's condition"
@@ -92,6 +92,7 @@ You have the following agents available:
    - Use when the user asks a SPECIFIC clinical question
    - Requires precise answer from patient data
    - Examples:
+     • The clinical impression is that the patient's unconjugated bilirubin level is elevated at what level?
      • "Is elevated troponin indicative of MI?"
      • "What does this lab value suggest?"
      • "Why was this medication stopped?"
@@ -100,13 +101,13 @@ You have the following agents available:
    - Use when the user asks about a DRUG
    - Includes: mechanism, properties, contraindications, safety
    - Examples:
-     • "What are the side effects of metformin?"
      • "Is aspirin safe in pregnancy?"
 
 4. literature_search
    - Use when the user wants RESEARCH PAPERS, GUIDELINES, or STUDIES
    - Query-based (not patient-specific)
    - Examples:
+     • "What are the side effects of metformin?"
      • "Recent studies on Imatinib resistance"
      • "WHO guidelines for dengue"
      • "Latest research on CKD treatment"
@@ -120,95 +121,98 @@ You have the following agents available:
      • "New FDA warning released yesterday"
      • "Recent medical policy update"
 
-Rules:
-- Choose ONE and only ONE intent
-- Do NOT explain your choice
-- Do NOT add extra text
-- Output must be exactly one of:
-  dashboard_summary | qa | drug_intelligence | literature_search | web_search
+    EXAMPLES:
+    - "Side effects of metformin?" -> {{ "intent": "drug_intelligence", "tool_query": "metformin" }}
+    - "Latest dengue guidelines?" -> {{ "intent": "literature_search", "tool_query": "dengue guidelines 2025" }}
+    - "Is troponin elevated?" -> {{ "intent": "qa", "tool_query": "Is troponin elevated?" }}
 
-User query:
-{state['user_query']}
-"""
-    intent = llm.invoke(prompt).content.strip()
+    User Query: "{state['user_query']}"
+
+    Output valid JSON only: {{ "intent": "...", "tool_query": "..." }}
+    """
     
-    # Initialize sources list empty for this turn
-    state["intent"] = intent
+    try:
+        response = llm.invoke(prompt).content.strip()
+        # Clean potential markdown
+        response = response.replace("```json", "").replace("```", "")
+        parsed = json.loads(response)
+        
+        state["intent"] = parsed["intent"]
+        state["tool_query"] = parsed["tool_query"]
+    except Exception:
+        # Fallback if JSON fails
+        state["intent"] = "qa"
+        state["tool_query"] = state["user_query"]
+        
     state["sources"] = [] 
     return state
 
-
-# =====================================================
-# NODE 2A: Retrieval (Internal Documents)
-# =====================================================
-
 async def retrieval_node(state: OrchestratorState) -> OrchestratorState:
     retriever = RetrieverAgent()
+    
+    # Use the tool_query we extracted (which handles the QA question logic)
+    query_text = state.get("tool_query") or state["user_query"]
 
     if state["intent"] == "dashboard_summary":
-        results = await retriever.retrieve_for_summary()
+        results = retriever.retrieve_for_summary()
     else:
-        results = await retriever.retrieve_for_qa(query=state["user_query"])
+        results = retriever.retrieve_for_qa(query=query_text)
 
     state["retrieved_context"] = results
     
-    # --- SOURCE EXTRACTION ---
-    # We extract document names from the RAG chunks
+    # Source Extraction
     doc_sources = []
-    seen_docs = set()
-    
+    seen = set()
     for r in results:
-        # Assuming your RAG chunks have 'source' or 'file_name' in metadata
-        doc_name = r.get("metadata", {}).get("source", "Unknown Document")
-        if doc_name not in seen_docs:
+        src = r.get("metadata", {}).get("source", "Unknown Document")
+        if src not in seen:
             doc_sources.append({
-                "type": "internal_document",
-                "title": doc_name,
-                "url": None, # Internal docs might not have URLs
+                "type": "internal_document", 
+                "title": src, 
                 "agent": "Vector Retrieval"
             })
-            seen_docs.add(doc_name)
+            seen.add(src)
             
     state["sources"] = doc_sources
     return state
 
-
-# =====================================================
-# NODE 2B: Drug Intelligence
-# =====================================================
-
 def drug_intelligence_node(state: OrchestratorState) -> OrchestratorState:
-    entities = state.get("entities", [])
-    drugs = extract_drug_names(entities)
+    # 1. First check if we extracted a drug name from the query
+    extracted_drug = state.get("tool_query")
+    
+    drugs = []
+    if extracted_drug:
+        # If the LLM found a drug name in the question, use it
+        drugs = [extracted_drug]
+    else:
+        # Fallback: Check if we have entities from ingestion (legacy support)
+        # (This helps if you ever wire up the offline pipeline to this node)
+        entities = state.get("entities", [])
+        for e in entities:
+            if e.get("type") == "medication":
+                drugs.append(e["entity"])
 
     if not drugs:
         state["tool_outputs"] = []
         return state
 
+    # 2. Fetch Data
     outputs = fetch_drug_intelligence(drugs)
     state["tool_outputs"] = outputs
     
-    # --- SOURCE EXTRACTION ---
     state["sources"] = [{
         "type": "database",
-        "title": "OpenFDA / DrugBank",
-        "url": "https://open.fda.gov",
+        "title": "PubChem / OpenFDA",
+        "url": "https://pubchem.ncbi.nlm.nih.gov",
         "agent": "Drug Intelligence"
     }]
     return state
 
-
-# =====================================================
-# NODE 2C: Literature Search
-# =====================================================
-
 def literature_node(state: OrchestratorState) -> OrchestratorState:
-    # returns a dict with 'results': [...]
-    output = literature_search(state["user_query"]) 
+    query = state.get("tool_query") or state["user_query"]
+    output = literature_search(query) 
     state["tool_outputs"] = [output]
     
-    # --- SOURCE EXTRACTION ---
-    # Assuming literature_search returns a list of papers under "results"
     papers = []
     if isinstance(output, dict) and "results" in output:
         for item in output["results"]:
@@ -222,17 +226,11 @@ def literature_node(state: OrchestratorState) -> OrchestratorState:
     state["sources"] = papers
     return state
 
-
-# =====================================================
-# NODE 2D: Web Search
-# =====================================================
-
 def web_search_node(state: OrchestratorState) -> OrchestratorState:
-    # returns list of dicts: [{title, url, snippet, ...}]
-    results = web_search(state["user_query"])
+    query = state.get("tool_query") or state["user_query"]
+    results = web_search(query)
     state["tool_outputs"] = results
     
-    # --- SOURCE EXTRACTION ---
     web_sources = []
     for r in results:
         web_sources.append({
@@ -244,11 +242,6 @@ def web_search_node(state: OrchestratorState) -> OrchestratorState:
         
     state["sources"] = web_sources
     return state
-
-
-# =====================================================
-# NODE 3: Context Compression
-# =====================================================
 
 def compress_context(state: OrchestratorState) -> OrchestratorState:
     raw_context = state.get("retrieved_context", []) + state.get("tool_outputs", [])
@@ -271,26 +264,36 @@ def compress_context(state: OrchestratorState) -> OrchestratorState:
     state["compressed_context"] = condensed
     return state
 
-
-# =====================================================
-# NODE 4: Answer Generation
-# =====================================================
-
 def answer_node(state: OrchestratorState) -> OrchestratorState:
     context = state.get("compressed_context", "")
     sources = state.get("sources", [])
     
-    # Format sources for the LLM to see (optional, helps with citation)
-    source_text = "\n".join([f"- {s['title']}" for s in sources])
+    # 1. Format sources with Index, Title, and URL for the LLM
+    source_list = []
+    for i, s in enumerate(sources, 1):
+        title = s.get("title", "Unknown Source")
+        url = s.get("url", "N/A")
+        # Format: [1] Title (URL: ...)
+        source_list.append(f"[{i}] {title} (URL: {url})")
 
+    source_text = "\n".join(source_list)
+
+    # 2. Update Prompt to request Citations & Links
     system_prompt = f"""You are a clinical assistant. 
-    Answer using the evidence below. 
+    Answer the user question using ONLY the provided evidence.
     
-    Evidence:
+    EVIDENCE:
     {context}
     
-    Available Sources:
+    SOURCE LIST:
     {source_text}
+    
+    INSTRUCTIONS:
+    - Answer clearly and professionally.
+    - When referencing specific data, cite the source index like [1] or [2].
+    - If a source has a valid URL (not "N/A"), provide it as a clickable Markdown link in your answer.
+      Example: "According to the [CDC Guidelines](https://cdc.gov)..."
+    - If the evidence is insufficient, state that clearly.
     """
     
     input_messages = [HumanMessage(content=system_prompt)] + state["messages"]
@@ -301,74 +304,100 @@ def answer_node(state: OrchestratorState) -> OrchestratorState:
         "messages": [response]
     }
 
-
 # =====================================================
-# GRAPH DEFINITION
-# =====================================================
-
-graph = StateGraph(OrchestratorState)
-
-graph.add_node("intent", detect_intent)
-graph.add_node("retrieval", retrieval_node)
-graph.add_node("drug", drug_intelligence_node)
-graph.add_node("literature", literature_node)
-graph.add_node("web", web_search_node)
-graph.add_node("compress", compress_context)
-graph.add_node("answer", answer_node)
-
-def route_from_intent(state: OrchestratorState):
-    intent = state["intent"]
-    if intent in ("dashboard_summary", "qa"): return "retrieval"
-    if intent == "drug_intelligence": return "drug"
-    if intent == "literature_search": return "literature"
-    if intent == "web_search": return "web"
-    return "retrieval"
-
-graph.add_conditional_edges(
-    "intent",
-    route_from_intent,
-    {
-        "retrieval": "retrieval",
-        "drug": "drug",
-        "literature": "literature",
-        "web": "web",
-    }
-)
-
-graph.add_edge("retrieval", "compress")
-graph.add_edge("drug", "compress")
-graph.add_edge("literature", "compress")
-graph.add_edge("web", "compress")
-graph.add_edge("compress", "answer")
-graph.add_edge("answer", END)
-
-graph.set_entry_point("intent")
-orchestrator = graph.compile()
-
-
-# =====================================================
-# Manual Test
+# 4. GRAPH BUILDER
 # =====================================================
 
-if __name__ == "__main__":
-    import asyncio
+def build_clinical_graph():
+    graph = StateGraph(OrchestratorState)
 
-    async def run():
-        # Setup initial state with a message
-        state = {
-            "user_query": "Recent studies on Imatinib resistance",
-            "messages": [HumanMessage(content="")]
+    graph.add_node("intent", detect_intent)
+    graph.add_node("retrieval", retrieval_node)
+    graph.add_node("drug", drug_intelligence_node)
+    graph.add_node("literature", literature_node)
+    graph.add_node("web", web_search_node)
+    graph.add_node("compress", compress_context)
+    graph.add_node("answer", answer_node)
+
+    def route_from_intent(state: OrchestratorState):
+        intent = state["intent"]
+        if intent in ("dashboard_summary", "qa"): return "retrieval"
+        if intent == "drug_intelligence": return "drug"
+        if intent == "literature_search": return "literature"
+        if intent == "web_search": return "web"
+        return "retrieval"
+
+    graph.add_conditional_edges(
+        "intent",
+        route_from_intent,
+        {
+            "retrieval": "retrieval",
+            "drug": "drug",
+            "literature": "literature",
+            "web": "web",
         }
+    )
 
-        print("Running Orchestrator...")
-        result = await orchestrator.ainvoke(state)
+    graph.add_edge("retrieval", "compress")
+    graph.add_edge("drug", "compress")
+    graph.add_edge("literature", "compress")
+    graph.add_edge("web", "compress")
+    graph.add_edge("compress", "answer")
+    graph.add_edge("answer", END)
 
-        print("\n===== FINAL ANSWER =====\n")
-        print(result["final_answer"])
+    graph.set_entry_point("intent")
+    return graph.compile()
+
+# Singleton instance
+_clinical_bot = build_clinical_graph()
+
+# =====================================================
+# 5. PUBLIC API
+# =====================================================
+
+async def query_clinical_system(user_query: str, chat_history: List = None) -> Dict:
+    if chat_history is None:
+        chat_history = []
         
-        print("\n===== SOURCES FOR FRONTEND =====\n")
-        # This is what you will send to your UI
-        for s in result.get("sources", []):
-            print(f"[{s['agent']}] {s['title']} ({s['url']})")
+    initial_state = {
+        "user_query": user_query,
+        "messages": chat_history + [HumanMessage(content=user_query)],
+        "entities": [],
+        "retrieved_context": [],
+        "tool_outputs": []
+    }
+    
+    result = await _clinical_bot.ainvoke(initial_state)
+    
+    return {
+        "answer": result["final_answer"],
+        "sources": result["sources"],
+        "intent": result["intent"]
+    }
 
-    asyncio.run(run())
+# # =====================================================
+# # Manual Test
+# # =====================================================
+
+# if __name__ == "__main__":
+#     import asyncio
+
+#     async def run():
+#         # Setup initial state with a message
+#         state = {
+#             "user_query": "Recent studies on Imatinib resistance",
+#             "messages": [HumanMessage(content="")]
+#         }
+
+#         print("Running Orchestrator...")
+#         result = await orchestrator.ainvoke(state)
+
+#         print("\n===== FINAL ANSWER =====\n")
+#         print(result["final_answer"])
+        
+#         print("\n===== SOURCES FOR FRONTEND =====\n")
+#         # This is what you will send to your UI
+#         for s in result.get("sources", []):
+#             print(f"[{s['agent']}] {s['title']} ({s['url']})")
+
+#     asyncio.run(run())
