@@ -1,0 +1,17 @@
+{
+  "clinical_summary": "On 2025-03-01 laboratory testing revealed markedly elevated SGOT (162 U/L), markedly elevated total bilirubin (9.4 mg/dL), and thrombocytopenia with a platelet count of 95,000/µL, indicating abnormal liver function and low platelet count.",
+  "differential_diagnoses": [
+    {
+      "name": "Acute hepatitis (viral or drug-induced)",
+      "justification": "Elevated SGOT and total bilirubin are consistent with acute hepatic injury."
+    },
+    {
+      "name": "Drug-induced liver injury",
+      "justification": "Pattern of transaminase and bilirubin elevation with concurrent thrombocytopenia can occur with hepatotoxic medications."
+    },
+    {
+      "name": "Severe cholestatic liver disease with portal hypertension",
+      "justification": "Marked hyperbilirubinemia and low platelet count may reflect impaired bile flow and splenic sequestration."
+    }
+  ]
+}

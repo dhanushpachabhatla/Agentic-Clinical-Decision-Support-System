@@ -1,7 +1,7 @@
 {
   "doc_metadata": {
     "source": "report_2_medic.png",
-    "date": "2025-11-06",
+    "date": "2025-05-26",
     "doc_type": "lab_report"
   },
   "entities": [
@@ -14,7 +14,7 @@
       "negated": false,
       "context": "Neutrophils 68.8 % 40.0 - 75.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -31,7 +31,7 @@
       "negated": false,
       "context": "Lymphocytes 16.0 % 20.0 - 45.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -48,7 +48,7 @@
       "negated": false,
       "context": "Eosinophils 8.1 % 0.0 - 7.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -65,7 +65,7 @@
       "negated": false,
       "context": "Basophils 0.4 % 0.0 - 1.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -82,7 +82,7 @@
       "negated": false,
       "context": "Monocytes 6.7 % 2.0 - 10.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -99,7 +99,7 @@
       "negated": false,
       "context": "RDW 13.9 % 11.6 - 14.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -116,7 +116,7 @@
       "negated": false,
       "context": "IPF 20.10 % 0.70 - 9.10",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -133,7 +133,7 @@
       "negated": false,
       "context": "Neutrophil Absolute 6288.3 /cumm 2000.0 - 7000.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -150,7 +150,7 @@
       "negated": false,
       "context": "Lymphocyte Absolute 1462.4 /cumm 1000.0 - 3000.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -167,7 +167,7 @@
       "negated": false,
       "context": "Monocyte Absolute 612.4 /cumm 200.0 - 1000.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -184,7 +184,7 @@
       "negated": false,
       "context": "Eosinophil Absolute 740.3 /cumm 40.0 - 440.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -201,7 +201,7 @@
       "negated": false,
       "context": "Basophil Absolute 36.6 /cumm 20.0 - 100.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -218,7 +218,7 @@
       "negated": false,
       "context": "SERUM BICARBONATE(Enzymatic) 23.0 mmol/L 22.0 - 29.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -235,7 +235,7 @@
       "negated": false,
       "context": "SERUM SODIUM (Indirect ISE) 143.0 mmol/l 135.0 - 145.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -252,7 +252,7 @@
       "negated": false,
       "context": "SERUM POTASSIUM (Indirect ISE) 3.48 mmol/l 3.50 - 5.10",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -269,7 +269,7 @@
       "negated": false,
       "context": "SERUM CHLORIDE (ISE / IMT) 103.2 mmol/L 98.0 - 107.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -286,7 +286,7 @@
       "negated": false,
       "context": "Blood Urea Nitrogen (Urease/GLDH) 9.10 mg/dl 6.00 - 20.00",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -303,7 +303,7 @@
       "negated": false,
       "context": "SERUM CREATININE (mod.Jaffe) 0.72 mg/dl 0.60 - 1.40",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -320,7 +320,7 @@
       "negated": false,
       "context": "GLUCOSE- Random (Hexokinase) 131 mg/dl 70 - 140",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -337,7 +337,7 @@
       "negated": false,
       "context": "e GFR 92.0 ml/min/1.73 sq.m >60.0",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -354,7 +354,7 @@
       "negated": false,
       "context": "INR 0.94",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -371,7 +371,7 @@
       "negated": false,
       "context": "Prothrombin Time Test 12.2 sec 11.4 - 15.2",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -388,7 +388,7 @@
       "negated": false,
       "context": "ISI Value 1.08 sec",
       "section": "lab_results",
-      "date": "2025-11-06",
+      "date": "2025-05-26",
       "source": "report_2_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -398,5 +398,5 @@
     }
   ],
   "residual_text": "EE Date : 06 :38 P™ Medical Discharge Date : J 09:35 am\nAdmitted under: Dr K Hemanth Kumar Department : oon OY\nPlatelet Count 197000 / cu.mm 150000 - 400000\nRenal Panel - I - Random\nResult Date & Time: I 07:51\nParameters Value Units Reference Range\nProthrombin Time -PT (Automated/ Clotting Assay _)\nResult Date & Time: 23:27\nParameters Value Units Reference Range\nResult Date & Time: J 09:18\nParameters Value Units Reference Range\nHIV I & II Antibody (Rapid Test)\nResult Date & Time: J 09:18\nParameters Value Units Reference Range",
-  "conclusion_text": "The clinical impression is not explicitly stated in the text, but based on the lab results provided, it appears that the patient had normal platelet count and underwent various tests including renal panel, prothrombin time, and HIV testing. However, without a explicit statement, it's difficult to determine the clinical impression."
+  "conclusion_text": "The clinical impression is not explicitly stated in the provided text, as it appears to be a collection of laboratory results and admission/discharge information. The text does not provide a summary or interpretation of the results, nor does it mention a specific diagnosis or condition. It only lists various test results, including platelet count, renal panel, prothrombin time, and HIV antibody test, along with their respective reference ranges."
 }

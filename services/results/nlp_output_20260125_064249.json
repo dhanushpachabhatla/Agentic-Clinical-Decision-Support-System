@@ -1,7 +1,7 @@
 {
   "doc_metadata": {
     "source": "report_1_medic.png",
-    "date": "2025-06-27",
+    "date": "2025-01-20",
     "doc_type": "lab_report"
   },
   "entities": [
@@ -14,7 +14,7 @@
       "negated": false,
       "context": "CONJUGATED (D. BILIRUBIN) 7.79 H mg/dl 0.00 - 0.30",
       "section": "lab_results",
-      "date": "2025-06-27",
+      "date": "2025-01-20",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -23,15 +23,15 @@
       ]
     },
     {
-      "entity": "AST",
+      "entity": "ASPARTATE AMINOTRANSFERASE (AST)",
       "type": "lab",
-      "normalized": "AST",
+      "normalized": "ASPARTATE_AMINOTRANSFERASE_(AST)",
       "value": "162",
       "unit": "U/L",
       "negated": false,
       "context": "SGOT 162 H WAL 0.00 - 46.00",
       "section": "lab_results",
-      "date": "2025-06-27",
+      "date": "2025-01-20",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -40,15 +40,15 @@
       ]
     },
     {
-      "entity": "ALT",
+      "entity": "ALANINE AMINOTRANSFERASE (ALT)",
       "type": "lab",
-      "normalized": "ALT",
+      "normalized": "ALANINE_AMINOTRANSFERASE_(ALT)",
       "value": "86",
       "unit": "U/L",
       "negated": false,
       "context": "SGPT 86 H WWAL 0.00 - 49.00",
       "section": "lab_results",
-      "date": "2025-06-27",
+      "date": "2025-01-20",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -65,7 +65,7 @@
       "negated": false,
       "context": "ALKALINE PHOSPHATASE 396 H U/L 42.00 - 128.00",
       "section": "lab_results",
-      "date": "2025-06-27",
+      "date": "2025-01-20",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -82,7 +82,7 @@
       "negated": false,
       "context": "TOTAL PROTEIN 6.2 gnvdl 6.20 - 3.00",
       "section": "lab_results",
-      "date": "2025-06-27",
+      "date": "2025-01-20",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -99,7 +99,7 @@
       "negated": false,
       "context": "ALBUMIN 3.7 L omdt 3.80 - 5.40",
       "section": "lab_results",
-      "date": "2025-06-27",
+      "date": "2025-01-20",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -116,7 +116,7 @@
       "negated": false,
       "context": "GLOBULIN 2.5 giivdl 1,50 - 3.60",
       "section": "lab_results",
-      "date": "2025-06-27",
+      "date": "2025-01-20",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -125,15 +125,15 @@
       ]
     },
     {
-      "entity": "ALBUMIN/GLOBULIN RATIO",
+      "entity": "ALBUMIN TO GLOBULIN RATIO",
       "type": "lab",
-      "normalized": "ALBUMIN/GLOBULIN_RATIO",
+      "normalized": "ALBUMIN_TO_GLOBULIN_RATIO",
       "value": "1.48",
       "unit": "",
       "negated": false,
       "context": "AWG RATIO — 1.48 1.0-2.0",
       "section": "lab_results",
-      "date": "2025-06-27",
+      "date": "2025-01-20",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -142,15 +142,15 @@
       ]
     },
     {
-      "entity": "GAMMA-GT",
+      "entity": "GAMMA-GLUTAMYL TRANSFERASE (GGT)",
       "type": "lab",
-      "normalized": "GAMMA-GT",
+      "normalized": "GAMMA-GLUTAMYL_TRANSFERASE_(GGT)",
       "value": "263",
       "unit": "U/L",
       "negated": false,
       "context": "GAMMAT-GT 263 H IU/L 11,00 - 50.00",
       "section": "lab_results",
-      "date": "2025-06-27",
+      "date": "2025-01-20",
       "source": "report_1_medic.png",
       "extraction_source": "lab_parser_regex",
       "span": [
@@ -160,5 +160,5 @@
     }
   ],
   "residual_text": "SARVODAYA HOSPITAL Dr. (Capt) Atul per (Rott) MB Path\nKJ-7, Kavi Nagar, Ghaziabad (U-P.) Regn No. MCI 3426\n[10 Investigation Observed Value Unit Biological Ref interval\n- VER FUNCTION TEST (LFT)\nBILIRUBIN TOTAL es mg/dl 0,30- 1,20\nUNCONJUGATED (1.0.BILIRUBIN) 1.63 H mg/dl 0.00 - 0.70\nFACILITIES : FOR HORMONES ASSAYS, FNAC, HISTOPATHOLOGY, BONE MARROW ASPIRATION & BIOPSY WITH MICRO PHOTOGRAPHS.\nNOTE : ABOVE MENTIONED FINDINGS ARE A PROFESSIONAL J AD NOT A FINAL DIAGNGSIS, ALL LABORATORY TESTS & OTHER\nINVESTIGATION RESULTS ARE TO BE CORELATED CLINIC-PATHOLOGICALLY, DISCREPANCIES, IF ANY, NECESSITATE REVIEW/REPEAT OF THE TESTS.\nCLINICAL CORELATION IS MANDATORY",
-  "conclusion_text": "The clinical impression is that the patient's unconjugated bilirubin level is elevated at 1.63 mg/dl, which is above the reference range of 0.00-0.70 mg/dl. However, the total bilirubin level is within the normal range of 0.30-1.20 mg/dl. Further clinical correlation is mandatory to interpret these findings and reach a final diagnosis."
+  "conclusion_text": "The clinical impression is not explicitly stated, but the lab results provided, specifically the elevated unconjugated bilirubin level (1.63 mg/dl), suggest a potential issue with liver function that requires further clinical correlation and evaluation."
 }
