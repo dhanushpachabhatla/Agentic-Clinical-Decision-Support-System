@@ -1,0 +1,17 @@
+{
+  "clinical_summary": "Across two laboratory assessments (2025-03-07 and 2025-07-13), the complete blood count remained within normal limits with normal differential and platelet counts, and peripheral smear was reported as normal. Liver enzymes (ALT 10 U/L, AST 12 U/L) were normal, while total bilirubin was mildly elevated to 1.4 mg/dL on the later date with a direct fraction of 0.6 mg/dL. C‑reactive protein was 1.8 mg/dL and procalcitonin 0.13 ng/mL, both within low‑risk ranges. No other abnormalities were documented.",
+  "differential_diagnoses": [
+    {
+      "name": "Gilbert syndrome",
+      "justification": "Mild total bilirubin elevation (1.4 mg/dL) with indirect bilirubin at upper normal limit and normal liver enzymes."
+    },
+    {
+      "name": "Early or mild cholestatic/hepatic dysfunction",
+      "justification": "Direct bilirubin elevation (0.6 mg/dL) despite normal ALT and AST."
+    },
+    {
+      "name": "Non‑specific inflammatory response",
+      "justification": "CRP modestly elevated (1.8 mg/dL) while procalcitonin remains low, suggesting inflammation without bacterial infection."
+    }
+  ]
+}

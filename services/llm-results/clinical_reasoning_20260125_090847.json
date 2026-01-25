@@ -1,0 +1,17 @@
+{
+  "clinical_summary": "Laboratory data from 2025-10-30 show a mildly elevated C‑reactive protein (1.8 mg/dL) and total bilirubin (1.4 mg/dL, reference 0.2‑1.0) with a direct fraction of 0.6 mg/dL (reference 0.0‑0.2) while procalcitonin was low (0.13 ng/mL) and liver transaminases (ALT 10 U/L, AST 12 U/L) were within normal limits; a complete blood count was normal with WBC 7,500/µL, neutrophils 58% and a normal peripheral smear. A repeat CBC on 2025-11-03 demonstrated normal hemoglobin, RBC indices, platelets, and WBC 8,200/µL with neutrophils 60% and a normal peripheral smear, and no repeat bilirubin measurement was provided.",
+  "differential_diagnoses": [
+    {
+      "name": "Mild hepatic dysfunction or early cholestasis",
+      "justification": "Elevated total and direct bilirubin with normal transaminases suggests a mild liver processing abnormality."
+    },
+    {
+      "name": "Gilbert syndrome or benign unconjugated hyperbilirubinemia",
+      "justification": "Mild total bilirubin elevation could reflect a hereditary bilirubin metabolism disorder, though direct bilirubin is also modestly increased."
+    },
+    {
+      "name": "Low‑grade inflammatory or infectious process",
+      "justification": "CRP is mildly elevated (1.8 mg/dL) while procalcitonin remains low, indicating possible non‑septic inflammation."
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "clinical_summary": "On 2025-05-28, a complete blood count showed hemoglobin 135 g/dL, RBC 5.05 million/µL, hematocrit 41.3 %, MCV 81.8 fL (slightly below reference), MCH 26.7 pg (slightly below), normal WBC 8200 cells/µL with differential within limits, and platelet count 3.4 ×10⁵/µL; peripheral smear was reported normal. On 2025-08-01, inflammatory markers were low (CRP 1.8 mg/dL, procalcitonin 0.13 ng/mL), total bilirubin 1.4 mg/dL and direct bilirubin 0.6 mg/dL were mildly elevated, while ALT 10 U/L and AST 12 U/L were normal; WBC 7500 cells/µL with neutrophils 58 % remained normal, and peripheral smear again noted normal morphology.",
+  "differential_diagnoses": [
+    {
+      "name": "Mild conjugated hyperbilirubinemia (early cholestasis or benign bilirubin elevation)",
+      "justification": "Direct bilirubin 0.6 mg/dL is above the reference range while transaminases are normal"
+    },
+    {
+      "name": "Iron deficiency or thalassemia trait",
+      "justification": "MCV 81.8 fL and MCH 26.7 pg are slightly below reference despite normal hemoglobin"
+    },
+    {
+      "name": "Absence of active infection or sepsis",
+      "justification": "CRP 1.8 mg/dL, procalcitonin 0.13 ng/mL, and WBC counts are within normal limits"
+    }
+  ]
+}

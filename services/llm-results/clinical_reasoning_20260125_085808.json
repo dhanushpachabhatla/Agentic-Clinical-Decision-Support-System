@@ -1,0 +1,21 @@
+{
+  "clinical_summary": "Serial laboratory evaluations from March to June 2025 show a persistently normal complete blood count with hemoglobin 135 g/dL, RBC 5.05 million/µL, WBC 7500‑8200/µL and a normal peripheral smear; liver enzymes (ALT 10‑10 U/L, AST 12‑12 U/L) and alkaline phosphatase (70 U/L) remained within reference ranges, while total bilirubin was elevated at 4.1 mg/dL on 2025‑03‑26 and decreased to 1.4 mg/dL on 2025‑06‑28 (direct bilirubin 0.6 mg/dL on both dates); C‑reactive protein was modestly elevated (4.2 mg/dL then 1.8 mg/dL) and procalcitonin remained low (0.10‑0.13 ng/mL), with a documented sepsis risk score of 6.5 on the latest report despite normal white cell differential; renal function (BUN 24 mg/dL, creatinine 0.4 mg/dL) and electrolytes (Na 137 mmol/L, K 4.2 mmol/L, Cl 96 mmol/L) were unremarkable.",
+  "differential_diagnoses": [
+    {
+      "name": "Gilbert syndrome",
+      "justification": "Mild unconjugated hyperbilirubinemia (total bilirubin up to 4.1 mg/dL, indirect bilirubin at upper normal limit) with normal liver enzymes and no anemia."
+    },
+    {
+      "name": "Early hepatic dysfunction or cholestasis",
+      "justification": "Elevated total bilirubin persisting across visits despite normal ALT/AST, suggesting possible early liver or biliary impairment."
+    },
+    {
+      "name": "Sepsis (low probability)",
+      "justification": "Documented sepsis risk score of 6.5 but low procalcitonin, modest CRP, and normal white cell count make active sepsis unlikely."
+    },
+    {
+      "name": "Hemolysis (unlikely)",
+      "justification": "Slightly elevated indirect bilirubin without accompanying anemia or abnormal reticulocyte data."
+    }
+  ]
+}

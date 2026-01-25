@@ -1,0 +1,21 @@
+{
+  "clinical_summary": "On 2025-05-01 laboratory testing showed a C-reactive protein of 1.8 mg/dL (within reference range), procalcitonin of 0.13 ng/mL (low risk for sepsis), total bilirubin 1.4 mg/dL (reference 0.2-1.0) with direct bilirubin 0.6 mg/dL (reference 0.0-0.2) and indirect bilirubin 0.8 mg/dL (reference 0.2-0.8), normal alanine aminotransferase (10 U/L) and aspartate aminotransferase (12 U/L), white blood cell count 7500 cells/µL with neutrophils 58%, and a normal peripheral smear.",
+  "differential_diagnoses": [
+    {
+      "name": "Gilbert syndrome",
+      "justification": "Mild isolated elevation of indirect bilirubin (0.8 mg/dL at upper limit) with normal liver enzymes and normal hemoglobin parameters suggests a benign unconjugated hyperbilirubinemia."
+    },
+    {
+      "name": "Mild hepatocellular dysfunction",
+      "justification": "Slightly elevated total and direct bilirubin despite normal ALT and AST may indicate early or mild liver conjugation impairment."
+    },
+    {
+      "name": "Hemolysis",
+      "justification": "Elevated indirect bilirubin could result from increased red cell breakdown, though no anemia or reticulocyte data are provided."
+    },
+    {
+      "name": "Early sepsis or systemic infection",
+      "justification": "CRP is modestly elevated and a sepsis risk score of 6.5 is noted, but low procalcitonin and normal WBC make infection unlikely."
+    }
+  ]
+}

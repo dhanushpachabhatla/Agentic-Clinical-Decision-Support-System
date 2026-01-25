@@ -1,0 +1,181 @@
+{
+  "doc_metadata": {
+    "source": "file-1.png",
+    "date": null,
+    "doc_type": "lab_report"
+  },
+  "entities": [
+    {
+      "entity": "CRP-QUANTITATIVE (Immuno Turbidimetry)",
+      "type": "lab",
+      "normalized": "CRP-QUANTITATIVE_(IMMUNO_TURBIDIMETRY)",
+      "value": "1.8",
+      "unit": "mg/dL",
+      "negated": false,
+      "context": "CRP-QUANTITATIVE (Immuno Turbidimetry 1.8 mg/l 06 - 6.0",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-1.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        310,
+        365
+      ]
+    },
+    {
+      "entity": "PROCALCITONIN (PCT) (ELFA)",
+      "type": "lab",
+      "normalized": "PROCALCITONIN_(PCT)_(ELFA)",
+      "value": "0.13",
+      "unit": "ng/mL",
+      "negated": false,
+      "context": "PROCALCITONIN (PCT) ( ELFA ) 0.13 ng/ml < 0.50 : Low risk for Sepsis > 2.0 : High",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-1.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        390,
+        471
+      ]
+    },
+    {
+      "entity": "risk for Sepsis",
+      "type": "lab",
+      "normalized": "RISK_FOR_SEPSIS",
+      "value": "6.5",
+      "unit": "",
+      "negated": false,
+      "context": "risk for Sepsis 6.5 - 2.0 : Clinical",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-1.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        472,
+        508
+      ]
+    },
+    {
+      "entity": "BILIRUBIN (TOTAL) (Diazo)",
+      "type": "lab",
+      "normalized": "BILIRUBIN_(TOTAL)_(DIAZO)",
+      "value": "1.4",
+      "unit": "mg/dL",
+      "negated": false,
+      "context": "BILIRUBIN (TOTAL) ( Diazo ) 1.4 mg/dl 0.2-1.0",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-1.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        585,
+        630
+      ]
+    },
+    {
+      "entity": "BILIRUBIN (DIRECT) (Diazo)",
+      "type": "lab",
+      "normalized": "BILIRUBIN_(DIRECT)_(DIAZO)",
+      "value": "0.6",
+      "unit": "mg/dL",
+      "negated": false,
+      "context": "BILIRUBIN (DIRECT) ( Dlazo ) 0.6 mg/dl 0.0 - 0.2",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-1.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        631,
+        679
+      ]
+    },
+    {
+      "entity": "BILIRUBIN (INDIRECT) (Calculated)",
+      "type": "lab",
+      "normalized": "BILIRUBIN_(INDIRECT)_(CALCULATED)",
+      "value": "0.8",
+      "unit": "mg/dL",
+      "negated": false,
+      "context": "BILIRUBIN (INDIRECT) (Calculated ) 0.8 mg/dl 0.2 - 0.8",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-1.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        680,
+        734
+      ]
+    },
+    {
+      "entity": "SGPT (ALT) (IFCC Without PDP)",
+      "type": "lab",
+      "normalized": "SGPT_(ALT)_(IFCC_WITHOUT_PDP)",
+      "value": "10",
+      "unit": "U/L",
+      "negated": false,
+      "context": "SGPT (ALT) (IFFC Without PDP ) 10 U/L 0-45",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-1.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        735,
+        777
+      ]
+    },
+    {
+      "entity": "SGOT (AST) (IFCC Without PDP)",
+      "type": "lab",
+      "normalized": "SGOT_(AST)_(IFCC_WITHOUT_PDP)",
+      "value": "12",
+      "unit": "U/L",
+      "negated": false,
+      "context": "SGOT (AST) (IFFC Without PDP ) 12 U/L 0-35",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-1.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        778,
+        820
+      ]
+    },
+    {
+      "entity": "WBC Total count",
+      "type": "lab",
+      "normalized": "WBC_TOTAL_COUNT",
+      "value": "7500",
+      "unit": "cells/μL",
+      "negated": false,
+      "context": "® weac Total count 7500 cells/cumm 4000 - 11000",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-1.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        942,
+        989
+      ]
+    },
+    {
+      "entity": "Neutrophils",
+      "type": "lab",
+      "normalized": "NEUTROPHILS",
+      "value": "58",
+      "unit": "%",
+      "negated": false,
+      "context": "Neutrophils 58 % 01 - 06",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-1.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        990,
+        1014
+      ]
+    }
+  ],
+  "residual_text": "A Unit of Venkateshwara Ortho Healthcare Pvt.Ltd\n: SRHO 127550 / MIP 23009163 Bill Date Time : 26-Jul-2025 11:15 AM\n: CREDIT / 303 A Bill No : SER 0354200\nDEPARTMENT OF BIOCHEMISTRY\nParameter Result Values UOM Biological Reference\nC-REACTIVE PROTINE, Serum\n@ PROCALCITONIN, serum\ncorreleheniage; 10 Sepsis or septic shock\nLFT (LIVER FUNCTION TEST), Serum\nDEPARTMENT OF PATHOLOGY\nParameter Result Values UOM Biological Reference\nCOMPLETE BLOOD PICTURE, whole Blood\nIMPRESSION NORMAL PERIPHERAL SMEAR\n*** End Of Report ***\nLAB INCHARGE Dr. SWETHA MD\nCONSULTANT PATHOLOGIST\nSuggested Clinical Correlation * If necesssary. Please discuss Test results related only to\nthe item tested.No part of the report can be reproduced without written permission of the\nPrint Dt : 26-July-2025 11:15 PM MIYAPUR\n#222 & 223; E +91)90,4747 0000\nPhase, 2, Myttni. Nogar, ¥; +91 40:2783 1111\nNostnegeda, Miyayur. Mz+91,27 Z 999.0002 : :\nHyderabad - 500 049, India. E: myp@srikarahospitals.com ig wwenstikarahesaitalscom",
+  "conclusion_text": "The clinical impression is that the peripheral smear is normal."
+}

@@ -1,0 +1,300 @@
+{
+  "doc_metadata": {
+    "source": "file-3.png",
+    "date": null,
+    "doc_type": "lab_report"
+  },
+  "entities": [
+    {
+      "entity": "CRP",
+      "type": "lab",
+      "normalized": "CRP",
+      "value": "4.2",
+      "unit": "mg/dL",
+      "negated": false,
+      "context": "CRP-QUANTITATIVE (Immuno Turbidimetry 4.2 mg/! 00 - 6.0",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        309,
+        364
+      ]
+    },
+    {
+      "entity": "PROCALCITONIN (PCT)",
+      "type": "lab",
+      "normalized": "PROCALCITONIN_(PCT)",
+      "value": "0.10",
+      "unit": "ng/mL",
+      "negated": false,
+      "context": "PROCALCITONIN (PCT) ( ELFA ) 0.10 ng/ml < 0.50 : Low risk for Sepsis > 2.0 : High",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        393,
+        474
+      ]
+    },
+    {
+      "entity": "BILIRUBIN (TOTAL)",
+      "type": "lab",
+      "normalized": "BILIRUBIN_(TOTAL)",
+      "value": "4.1",
+      "unit": "mg/dL",
+      "negated": false,
+      "context": "BILIRUBIN (TOTAL) ( Diazo ) 4.1 mg/dl 0.2-1.0",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        589,
+        634
+      ]
+    },
+    {
+      "entity": "BILIRUBIN (DIRECT)",
+      "type": "lab",
+      "normalized": "BILIRUBIN_(DIRECT)",
+      "value": "0.6",
+      "unit": "mg/dL",
+      "negated": false,
+      "context": "BILIRUBIN (DIRECT) ( Diazo ) 0.6 mg/dl 0.0 - 0.2",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        635,
+        683
+      ]
+    },
+    {
+      "entity": "BILIRUBIN (INDIRECT)",
+      "type": "lab",
+      "normalized": "BILIRUBIN_(INDIRECT)",
+      "value": "0.8",
+      "unit": "mg/dL",
+      "negated": false,
+      "context": "BILIRUBIN (INDIRECT) ( Calculated ) 0.8 mg/dl 0.2- 0.8",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        684,
+        738
+      ]
+    },
+    {
+      "entity": "SGPT (ALT)",
+      "type": "lab",
+      "normalized": "SGPT_(ALT)",
+      "value": "10",
+      "unit": "U/L",
+      "negated": false,
+      "context": "SGPT (ALT) (IFFC Without PDP ) 10 U/L 0-45",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        739,
+        781
+      ]
+    },
+    {
+      "entity": "SGOT (AST)",
+      "type": "lab",
+      "normalized": "SGOT_(AST)",
+      "value": "12",
+      "unit": "U/L",
+      "negated": false,
+      "context": "SGOT (AST) ( IFFC Without PDP ) 12 U/L 0-35",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        782,
+        825
+      ]
+    },
+    {
+      "entity": "ALKALINE PHOSPHATASE",
+      "type": "lab",
+      "normalized": "ALKALINE_PHOSPHATASE",
+      "value": "70",
+      "unit": "U/L",
+      "negated": false,
+      "context": "oe PHOSPHATASE ( IFFC Without 70 IU/L 44 - 280",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        826,
+        872
+      ]
+    },
+    {
+      "entity": "TOTAL PROTEINS",
+      "type": "lab",
+      "normalized": "TOTAL_PROTEINS",
+      "value": "74",
+      "unit": "g/dL",
+      "negated": false,
+      "context": "TOTAL PROTEINS ( Biuret ) 74 gm/dl 6.0 - 8.0",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        873,
+        917
+      ]
+    },
+    {
+      "entity": "ALBUMIN",
+      "type": "lab",
+      "normalized": "ALBUMIN",
+      "value": "3.9",
+      "unit": "g/dL",
+      "negated": false,
+      "context": "ALBUMIN ( Bromcresol Green (BCG) ) 3.9 g/d L 3.5-5.0",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        918,
+        970
+      ]
+    },
+    {
+      "entity": "GLOBULIN",
+      "type": "lab",
+      "normalized": "GLOBULIN",
+      "value": "3.2",
+      "unit": "g/dL",
+      "negated": false,
+      "context": "GLOBULIN ( Calculated ) 3.2 gm/dl 2.0 - 3.5",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        971,
+        1014
+      ]
+    },
+    {
+      "entity": "ALBUMIN/GLOBULIN RATIO",
+      "type": "lab",
+      "normalized": "ALBUMIN/GLOBULIN_RATIO",
+      "value": "1.2",
+      "unit": null,
+      "negated": false,
+      "context": "AIG RATIO ( Calculated ) 1.2 1.0 - 2.3",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        1015,
+        1053
+      ]
+    },
+    {
+      "entity": "BLOOD UREA",
+      "type": "lab",
+      "normalized": "BLOOD_UREA",
+      "value": "24",
+      "unit": "mg/dL",
+      "negated": false,
+      "context": "ae) BLOOD UREA ( Urease, UV ) 24 mg/dl 15-45",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        1082,
+        1126
+      ]
+    },
+    {
+      "entity": "CREATININE",
+      "type": "lab",
+      "normalized": "CREATININE",
+      "value": "0.4",
+      "unit": "mg/dL",
+      "negated": false,
+      "context": "CREATININE (Enzymatic ) ge mg/dl 0.4 -1.4",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        1127,
+        1168
+      ]
+    },
+    {
+      "entity": "SODIUM",
+      "type": "lab",
+      "normalized": "SODIUM",
+      "value": "137",
+      "unit": "mmol/L",
+      "negated": false,
+      "context": "SODIUM (ISE ) 137 mmol/I 134 - 146",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        1169,
+        1203
+      ]
+    },
+    {
+      "entity": "POTASSIUM",
+      "type": "lab",
+      "normalized": "POTASSIUM",
+      "value": "4.2",
+      "unit": "mmol/L",
+      "negated": false,
+      "context": "POTASSIUM (ISE ) 4.2 mmol/l 3.5.5.1",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        1204,
+        1239
+      ]
+    },
+    {
+      "entity": "CHLORIDE",
+      "type": "lab",
+      "normalized": "CHLORIDE",
+      "value": "96",
+      "unit": "mmol/L",
+      "negated": false,
+      "context": "CHLORIDE (ISE ) 96 mmol/l 96 - 108",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-3.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        1240,
+        1274
+      ]
+    }
+  ],
+  "residual_text": "A Unit of Venkateshwara Ortho Healthcare Pvt.Ltd\n: SRHO 127550 / MIP 23009163 Bill Date Time : 26-Aun-2025 09:30 AM\n:CREDIT / 303 A Bill No : SERO 354200\nDEPARTMENT OF BIOCHEMISTRY\n|Parameter Result Values UOM : Biological Reference\nC-REACTIVE PROTINE, Serum\n0 PROCALCITONIN, Serum\nrisk for Sepsis S.5 - 2.0 : Clinical\ncorreletionage; 10 Sepsis or septic shock\nLFT (LIVER FUNCTION TEST), Serum\nRENAL FUNCTION TEST, Serum\n*** End Of Report ***\nLAB INCHARGE Dr. SWETHA M D\nCONSULTANT PATHOLOGIST\nSuggested Clinical Correlation * If necesssary, Please discuss Test results related only to\nthe item tested.No part of the report can be reproduced without written permission of the\nPrint Ift : 26-Jul-2025 07:15 AM MIYAPUR\nose #222 BRI) i: tr#9140-4767 0000\n| o Phetda, 2 a Nutini Neger, lp. Fi 3) 49-2783 1111\nMosirespals, Miyeumn, Ir. .Mse 91.222 999 0002 . ,\nNyderabod - $00 049. India. ee pllienikcvobosstials: com wewwstikarsboseitalsyco",
+  "conclusion_text": "The clinical impression based on this laboratory report is that the patient may have a risk for sepsis, as indicated by the procalcitonin result. However, a definitive diagnosis and clinical correlation can only be made by a healthcare professional in conjunction with the patient's overall clinical presentation and other diagnostic findings."
+}
