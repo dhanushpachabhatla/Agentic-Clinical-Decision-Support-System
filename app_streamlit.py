@@ -1,21 +1,37 @@
 import streamlit as st
 import tempfile
+import asyncio
 from pathlib import Path
 import json
 from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage, AIMessage
 
 # -------------------------------------------------
-# ENV (MUST be first)
+# ENV & STATE INITIALIZATION
 # -------------------------------------------------
 load_dotenv()
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "orchestrator" not in st.session_state:
+    st.session_state.orchestrator = None
+if "analysis_complete" not in st.session_state:
+    st.session_state.analysis_complete = False
+if "reasoning_result" not in st.session_state:
+    st.session_state.reasoning_result = None
 
 # -------------------------------------------------
 # PIPELINE IMPORTS
 # -------------------------------------------------
 from app.state import ClinicalState
 from app.orchestrator import ClinicalOrchestrator
-from services.answer import SYSTEM_PROMPT, run_clinical_reasoning
 
+# -------------------------------------------------
+# ASYNC HELPER
+# -------------------------------------------------
+def run_async(coro):
+    """Helper to run async functions in Streamlit's sync environment."""
+    return asyncio.run(coro)
 
 # -------------------------------------------------
 # STREAMLIT CONFIG
@@ -32,49 +48,22 @@ st.set_page_config(
 with st.sidebar:
     st.markdown("## 🧠 MediMind AI")
     st.caption("Agentic Clinical Decision Support")
-
     st.divider()
-
+    
+    # Toggle between Chat and Report
+    view_mode = st.radio("Select View:", ["📄 Analysis Report", "💬 Interactive Chat"])
+    
+    st.divider()
     st.markdown("### 📌 Capabilities")
-    st.markdown(
-        """
-        • Multi-report ingestion  
-        • Deterministic clinical NLP  
-        • Date-normalized patient history  
-        • LLM-based longitudinal reasoning  
-        • Differential diagnosis generation  
-        """
-    )
-
+    st.markdown("• Multi-report ingestion\n• Deterministic clinical NLP\n• LLM-based reasoning")
     st.divider()
-
-    st.markdown("### ⚠️ Safety Guardrails")
-    st.markdown(
-        """
-        • No diagnosis confirmation  
-        • No hallucination  
-        • Evidence-based reasoning only  
-        • Structured & auditable outputs  
-        """
-    )
-
-    st.divider()
-    st.caption("Version: v1.0.0")
-
-
-# -------------------------------------------------
-# MAIN HEADER
-# -------------------------------------------------
-st.title("🧠 MediMind AI")
-st.subheader("Clinical Decision Support System")
-st.caption("Upload clinical reports to generate a factual longitudinal summary and differential diagnoses.")
-
-st.divider()
-
+    st.caption("Version: v2.0.0 (Chat Enabled)")
 
 # -------------------------------------------------
 # FILE UPLOAD
 # -------------------------------------------------
+st.title("🧠 MediMind AI")
+
 uploaded_files = st.file_uploader(
     "📤 Upload Clinical Reports (PDF / Images)",
     type=["pdf", "png", "jpg", "jpeg"],
@@ -82,125 +71,82 @@ uploaded_files = st.file_uploader(
 )
 
 if not uploaded_files:
-    st.info("Please upload one or more clinical reports to begin analysis.")
+    st.info("Please upload reports to begin.")
     st.stop()
 
+# Save files and init Orchestrator
+if not st.session_state.analysis_complete:
+    if st.button("🚀 Run Clinical Analysis", use_container_width=True):
+        with st.spinner("Processing pipeline..."):
+            temp_dir = tempfile.TemporaryDirectory()
+            file_paths = []
+            for file in uploaded_files:
+                temp_path = Path(temp_dir.name) / file.name
+                with open(temp_path, "wb") as f:
+                    f.write(file.read())
+                file_paths.append(str(temp_path))
+
+            # Initialize and Run Pipeline
+            orch = ClinicalOrchestrator()
+            state = ClinicalState(file_paths=file_paths)
+            
+            # Step-by-step execution mirroring your main.py
+            state = orch.run_ingestion(state)
+            state = orch.run_clinical_nlp(state)
+            state = orch.run_embedding(state)
+            state = orch.run_vector_upsert(state)
+            state = orch.run_reasoning(state)
+
+            # Store in session state
+            st.session_state.orchestrator = orch
+            st.session_state.reasoning_result = state.reasoning_result
+            st.session_state.analysis_complete = True
+            st.rerun()
 
 # -------------------------------------------------
-# SAVE FILES TEMPORARILY
+# MAIN INTERFACE (REPORT VS CHAT)
 # -------------------------------------------------
-temp_dir = tempfile.TemporaryDirectory()
-file_paths = []
+if st.session_state.analysis_complete:
+    
+    if view_mode == "📄 Analysis Report":
+        st.header("📄 Clinical Reasoning Results")
+        with st.container(border=True):
+            st.markdown(st.session_state.reasoning_result or "No reasoning produced.")
 
-for file in uploaded_files:
-    temp_path = Path(temp_dir.name) / file.name
-    with open(temp_path, "wb") as f:
-        f.write(file.read())
-    file_paths.append(str(temp_path))
-
-st.success(f"Uploaded {len(file_paths)} file(s)")
-
-
-# -------------------------------------------------
-# RUN PIPELINE
-# -------------------------------------------------
-if st.button("🚀 Run Clinical Analysis", use_container_width=True):
-
-    with st.spinner("Running full agentic clinical pipeline…"):
-        orchestrator = ClinicalOrchestrator()
-        state = ClinicalState(file_paths=file_paths)
-
-        # -----------------------------
-        # STEP 1: INGESTION
-        # -----------------------------
-        state = orchestrator.run_ingestion(state)
-
-        if not state.raw_documents:
-            st.error("Ingestion failed. No documents extracted.")
-            st.stop()
-
-        # -----------------------------
-        # STEP 2: CLINICAL NLP
-        # -----------------------------
-        state = orchestrator.run_clinical_nlp(state)
-
-        if not state.normalized_nlp_results:
-            st.error("Clinical NLP produced no usable results.")
-            st.stop()
-
-        # -----------------------------
-        # STEP 3: LLM REASONING (OSS-120B)
-        # -----------------------------
-        reasoning_output_path = run_clinical_reasoning(
-            SYSTEM_PROMPT,
-            state.normalized_nlp_results
-        )
-
-        with open(reasoning_output_path, "r", encoding="utf-8") as f:
-            reasoning_output = f.read()
-
-    st.success("Clinical analysis completed successfully")
-
-    # -------------------------------------------------
-    # PARSE REASONING OUTPUT
-    # -------------------------------------------------
-    try:
-        parsed = json.loads(reasoning_output)
-    except json.JSONDecodeError:
-        st.error("Reasoning agent returned invalid JSON.")
-        st.code(reasoning_output)
-        st.stop()
-
-    # -------------------------------------------------
-    # RESULTS UI
-    # -------------------------------------------------
-    st.divider()
-    st.header("📄 Clinical Reasoning Results")
-
-    # -----------------------------
-    # CLINICAL SUMMARY
-    # -----------------------------
-    st.markdown("### 🧾 Clinical Summary")
-
-    with st.container(border=True):
-        st.markdown(
-            parsed.get("clinical_summary", "_No clinical summary generated._")
-        )
-
-    # -----------------------------
-    # DIFFERENTIAL DIAGNOSES
-    # -----------------------------
-    st.markdown("### 🧪 Differential Diagnoses (Prioritized)")
-
-    diffs = parsed.get("differential_diagnoses", [])
-
-    if not diffs:
-        st.info("No differential diagnoses were generated due to limited evidence.")
     else:
-        for idx, dx in enumerate(diffs, start=1):
-            with st.container(border=True):
-                col1, col2 = st.columns([1, 12])
+        st.header("💬 Clinical Assistant Chat")
+        st.caption("Ask questions about the uploaded documents or the clinical summary.")
 
-                with col1:
-                    st.markdown(f"**#{idx}**")
+        # Display Chat History
+        for message in st.session_state.messages:
+            with st.chat_message("user" if isinstance(message, HumanMessage) else "assistant"):
+                st.markdown(message.content)
 
-                with col2:
-                    st.markdown(f"**{dx.get('name', 'Unknown Diagnosis')}**")
-                    st.markdown(
-                        dx.get("justification", "_No justification provided._")
+        # Chat Input
+        if prompt := st.chat_input("Ask about the patient's history..."):
+            # Add User Message
+            st.session_state.messages.append(HumanMessage(content=prompt))
+            with st.chat_message("user"):
+                st.markdown(prompt)
+
+            # Generate AI Response
+            with st.chat_message("assistant"):
+                with st.spinner("Thinking..."):
+                    # Call the async orchestrator method
+                    response = run_async(
+                        st.session_state.orchestrator.answer_user_query(
+                            prompt, 
+                            st.session_state.messages[:-1] # Exclude latest prompt
+                        )
                     )
+                    
+                    answer = response['answer']
+                    st.markdown(answer)
+                    
+                    if response.get('sources'):
+                        with st.expander("View Sources"):
+                            for s in response['sources']:
+                                st.write(f"- {s['title']}")
 
-    # -----------------------------
-    # RAW JSON (AUDIT MODE)
-    # -----------------------------
-    with st.expander("🔍 View Raw JSON Output (Audit / Debug)"):
-        st.code(parsed, language="json")
-
-    # -------------------------------------------------
-    # WARNINGS
-    # -------------------------------------------------
-    if state.errors:
-        st.divider()
-        st.subheader("⚠️ Pipeline Warnings")
-        for err in state.errors:
-            st.warning(err)
+            # Update Session History
+            st.session_state.messages.append(AIMessage(content=answer))

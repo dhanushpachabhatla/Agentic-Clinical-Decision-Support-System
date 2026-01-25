@@ -1,0 +1,21 @@
+{
+  "clinical_summary": "Serial laboratory evaluations from November to December 2025 show generally normal complete blood counts with a normocytic, normochromic red cell morphology, normal white blood cell and platelet counts, and normal differential percentages; a slight reduction in MCV (81.8 fL) and MCH (26.7 pg) was noted on 2025-11-07. Liver function tests on 2025-12-15 revealed normal transaminases (ALT 10 U/L, AST 12 U/L) but a mild elevation of total bilirubin (1.4 mg/dL) and direct bilirubin (0.6 mg/dL) with indirect bilirubin at the upper reference limit (0.8 mg/dL). Inflammatory markers were within normal limits (CRP 1.8 mg/L, procalcitonin 0.13 ng/mL). The peripheral smear was reported as normal in both reports.",
+  "differential_diagnoses": [
+    {
+      "name": "Gilbert syndrome",
+      "justification": "Mildly elevated indirect bilirubin (0.8 mg/dL) with normal liver enzymes suggests a benign unconjugated hyperbilirubinemia."
+    },
+    {
+      "name": "Early cholestatic or hepatobiliary disorder",
+      "justification": "Isolated direct bilirubin elevation (0.6 mg/dL) despite normal ALT and AST may indicate early biliary dysfunction."
+    },
+    {
+      "name": "Thalassemia trait or iron deficiency anemia",
+      "justification": "Low MCV (81.8 fL) and MCH (26.7 pg) with normal hemoglobin point toward a microcytic process such as thalassemia trait or early iron deficiency."
+    },
+    {
+      "name": "Subclinical hemolysis",
+      "justification": "Upper‑limit indirect bilirubin with normal hemoglobin could reflect low‑grade hemolysis."
+    }
+  ]
+}

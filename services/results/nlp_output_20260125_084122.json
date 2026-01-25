@@ -1,0 +1,249 @@
+{
+  "doc_metadata": {
+    "source": "file-2.png",
+    "date": null,
+    "doc_type": "lab_report"
+  },
+  "entities": [
+    {
+      "entity": "Haemoglobin",
+      "type": "lab",
+      "normalized": "HAEMOGLOBIN",
+      "value": "135",
+      "unit": "g/dL",
+      "negated": false,
+      "context": "Haamoglobin (SLS METHOD ) 135 g/d L 13.0 - 17.0",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        278,
+        325
+      ]
+    },
+    {
+      "entity": "RBC",
+      "type": "lab",
+      "normalized": "RBC",
+      "value": "5.05",
+      "unit": "10^12/L",
+      "negated": false,
+      "context": "RBC (Impedence ) 5.05 mil/cmm 4.5 -5.5",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        326,
+        364
+      ]
+    },
+    {
+      "entity": "PCV",
+      "type": "lab",
+      "normalized": "PCV",
+      "value": "41.3",
+      "unit": "%",
+      "negated": false,
+      "context": "PCV (Impedence ) 41.3 % 40 - 50",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        365,
+        396
+      ]
+    },
+    {
+      "entity": "MCV",
+      "type": "lab",
+      "normalized": "MCV",
+      "value": "81.8",
+      "unit": "fL",
+      "negated": false,
+      "context": "MCV (Impedence ) 81.8 fl 83 - 101",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        397,
+        430
+      ]
+    },
+    {
+      "entity": "MCH",
+      "type": "lab",
+      "normalized": "MCH",
+      "value": "26.7",
+      "unit": "pg",
+      "negated": false,
+      "context": "MCH (Impedence ) 26.7 pg 27 - 32",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        431,
+        463
+      ]
+    },
+    {
+      "entity": "MCHC",
+      "type": "lab",
+      "normalized": "MCHC",
+      "value": "32.7",
+      "unit": "g/dL",
+      "negated": false,
+      "context": "MCHC ( Impedence ) 32.7 g/di 31.5 - 34.5",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        464,
+        504
+      ]
+    },
+    {
+      "entity": "RDW-CV",
+      "type": "lab",
+      "normalized": "RDW-CV",
+      "value": "11.8",
+      "unit": "%",
+      "negated": false,
+      "context": "RDW-CV (HB-Colorimetry ,TLC Electrical i ) 11.8 % 11.6 - 14.0",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        505,
+        566
+      ]
+    },
+    {
+      "entity": "WBC Total Count",
+      "type": "lab",
+      "normalized": "WBC_TOTAL_COUNT",
+      "value": "8200",
+      "unit": "10^9/L",
+      "negated": false,
+      "context": "WBC Total Count ( Impedence ) 8200 cells/cumm 4000 - 11000",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        567,
+        625
+      ]
+    },
+    {
+      "entity": "Platelet Count",
+      "type": "lab",
+      "normalized": "PLATELET_COUNT",
+      "value": "3.4",
+      "unit": "10^9/L",
+      "negated": false,
+      "context": "Platelet Count ( Impedence ) 3.4 Lakhs/Cumm 1.5-4.5",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        626,
+        677
+      ]
+    },
+    {
+      "entity": "Neutrophils",
+      "type": "lab",
+      "normalized": "NEUTROPHILS",
+      "value": "60",
+      "unit": "%",
+      "negated": false,
+      "context": "Neutrophils ( VCS/LM ) 60 % 40 - 70",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        696,
+        731
+      ]
+    },
+    {
+      "entity": "Lymphocytes",
+      "type": "lab",
+      "normalized": "LYMPHOCYTES",
+      "value": "30",
+      "unit": "%",
+      "negated": false,
+      "context": "Lymphocytes ( VCS/LM ) 30 % 20 - 40",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        732,
+        767
+      ]
+    },
+    {
+      "entity": "Monocytes",
+      "type": "lab",
+      "normalized": "MONOCYTES",
+      "value": "06",
+      "unit": "%",
+      "negated": false,
+      "context": "Monocytes ( VCS/LM ) 06 % 02 - 10",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        768,
+        801
+      ]
+    },
+    {
+      "entity": "Eosinophils",
+      "type": "lab",
+      "normalized": "EOSINOPHILS",
+      "value": "02",
+      "unit": "%",
+      "negated": false,
+      "context": "Eosinophils ( VCS/LM ) 02 % 01 - 06",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        802,
+        837
+      ]
+    },
+    {
+      "entity": "Basophils",
+      "type": "lab",
+      "normalized": "BASOPHILS",
+      "value": "00",
+      "unit": "%",
+      "negated": false,
+      "context": "Basophils ( VCS/LM ) 00 % 00 - 02",
+      "section": "lab_results",
+      "date": null,
+      "source": "file-2.png",
+      "extraction_source": "lab_parser_regex",
+      "span": [
+        838,
+        871
+      ]
+    }
+  ],
+  "residual_text": "A Unit of Venkateshwara Ortho Healthcare Pvt.Ltd\nBill Date Time : 26-Jun-2025 09:30 AM\n:CREDIT / 303 A i : SERO 354200\nDEPARTMENT OF PATHOLOGY\n|Parameter Result Values UOM Biological Reference\nCOMPLETE BLOOD PICTURE, Whole Blood\nRBC NORMOCYTIC NORMOCHROMIC\nIMPRESSION NORMAL PERIPHERAL SMEAR\n*** End Of Report ***\nCONSULTANT PATHOLOGIST\nSuggested Clinical Correlation * If necesssary, Please discuss Test results related only to\nthe item tested No part of the report can be reproduced without written permission of the\nPrint Dt : 26-Jun-2025 07:01 PM\n#222:8'223) +9180 4747 0000\nPhose; 2, Mylint; Nogar, F: +9) 9072783 1111\nMedinagodn, Miyayur, Mc#91 777 999.0002\nHyderabad - 800 049, India. E: myp@srikarahospitals.com wannnnanrsciken ghospi algycom",
+  "conclusion_text": "The clinical impression is that the complete blood picture is normal, with a normocytic normochromic red blood cell (RBC) count and a normal peripheral smear."
+}
