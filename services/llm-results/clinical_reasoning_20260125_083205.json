@@ -1,0 +1,17 @@
+{
+  "clinical_summary": "Across three laboratory reports from April to June 2025, the patient’s complete blood counts remained within normal limits with WBC 7500‑8200 cells/µL and a normal peripheral smear; hemoglobin 13.5 g/dL, RBC 5.05 ×10^12/L, and platelets 340 ×10^3/µL. Inflammatory markers (CRP 1.8‑4.2 mg/dL) and procalcitonin (0.10‑0.13 ng/mL) were low, indicating low sepsis risk. Liver enzymes (ALT 10 U/L, AST 12 U/L) were normal, but total bilirubin rose from 1.4 mg/dL (direct 0.6 mg/dL) in April to 4.1 mg/dL (direct 0.6 mg/dL) in May, exceeding the reference range, while alkaline phosphatase (70 U/L) and albumin (3.9 g/dL) remained normal. Total protein was reported as 74 g/dL (reference 6‑8 g/dL). Electrolytes, BUN (24 mg/dL) and creatinine (0.4 mg/dL) were within normal limits.",
+  "differential_diagnoses": [
+    {
+      "name": "Obstructive biliary pathology (e.g., gallstone, biliary stricture)",
+      "justification": "Elevated total and direct bilirubin with normal transaminases suggests conjugated hyperbilirubinemia due to biliary obstruction."
+    },
+    {
+      "name": "Intrahepatic cholestasis (e.g., drug‑induced)",
+      "justification": "Conjugated hyperbilirubinemia in the setting of normal alkaline phosphatase and liver enzymes may reflect intrahepatic cholestasis."
+    },
+    {
+      "name": "Gilbert syndrome or mild unconjugated hyperbilirubinemia",
+      "justification": "Mild bilirubin elevation noted earlier (1.4 mg/dL) could be consistent with a benign hereditary condition, though direct bilirubin is also elevated."
+    }
+  ]
+}

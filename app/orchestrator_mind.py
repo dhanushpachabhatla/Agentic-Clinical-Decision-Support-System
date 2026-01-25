@@ -30,18 +30,22 @@ from agents.web_search_agent import web_search
 
 def _init_llm():
     load_dotenv()
-    GEMINI_API_KEY3 = os.getenv("GEMINI_API_KEY4")
-    if not GEMINI_API_KEY3:
-        GEMINI_API_KEY3 = os.getenv("GEMINI_API_KEY1") # Fallback
-        if not GEMINI_API_KEY3:
-            raise ValueError("GEMINI_API_KEY not found in .env")
-    
-    os.environ["GEMINI_API_KEY"] = GEMINI_API_KEY3
-    os.environ["GOOGLE_API_KEY"] = GEMINI_API_KEY3
+
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+    if not GEMINI_API_KEY:
+        raise ValueError(
+            "GEMINI_API_KEY not found in environment. "
+            "Please set GEMINI_API_KEY in your .env file."
+        )
+
+    # Expose for Google SDKs
+    os.environ["GEMINI_API_KEY"] = GEMINI_API_KEY
+    os.environ["GOOGLE_API_KEY"] = GEMINI_API_KEY
 
     return ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
-        temperature=0.0, # Lower temperature for better JSON
+        temperature=0.0,   # deterministic
         max_tokens=None,
         max_retries=2,
     )

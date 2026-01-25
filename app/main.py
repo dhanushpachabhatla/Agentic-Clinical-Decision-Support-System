@@ -56,9 +56,9 @@ def main():
         PROJECT_ROOT / "samples" / "file-1.png",
         PROJECT_ROOT / "samples" / "file-2.png",
         PROJECT_ROOT / "samples" / "file-3.png",
-        # PROJECT_ROOT / "samples" / "file-4.png",
-        # PROJECT_ROOT / "samples" / "file-5.png",  
-        # PROJECT_ROOT / "samples" / "file-6.png",  
+            # PROJECT_ROOT / "samples" / "file-4.png",
+            # PROJECT_ROOT / "samples" / "file-5.png",  
+            # PROJECT_ROOT / "samples" / "file-6.png",  
     ]
 
     file_paths = [str(p) for p in file_paths if p.exists()]
